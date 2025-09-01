@@ -178,6 +178,16 @@ textarea {
     font-size: 1rem;
 }
 
+.api-buttons {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+.api-buttons .btn {
+    margin: 0;
+}
+
 .prompt-history {
     margin-top: 1rem;
 }

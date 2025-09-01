@@ -17,6 +17,7 @@ class AIImageGenerator {
             apiKey: document.getElementById('api-key'),
             apiStatus: document.getElementById('api-status'),
             saveConfig: document.getElementById('save-config'),
+            clearConfig: document.getElementById('clear-config'),
             promptText: document.getElementById('prompt-text'),
             charCount: document.getElementById('char-count'),
             promptHistorySelect: document.getElementById('prompt-history-select'),
@@ -39,6 +40,9 @@ class AIImageGenerator {
     bindEvents() {
         // API設定の保存
         this.elements.saveConfig.addEventListener('click', () => this.saveSettings());
+        
+        // API設定の解除
+        this.elements.clearConfig.addEventListener('click', () => this.clearSettings());
         
         // プロンプト入力の文字数カウント
         this.elements.promptText.addEventListener('input', () => this.updateCharCount());
@@ -483,6 +487,21 @@ class AIImageGenerator {
                 document.body.removeChild(notification);
             }, 300);
         }, 3000);
+    }
+    
+    // API設定の解除
+    clearSettings() {
+        if (confirm('APIキー設定を解除しますか？')) {
+            // LocalStorageから設定を削除
+            localStorage.removeItem('ai-image-generator-settings');
+            
+            // UIをリセット
+            this.apiKey = '';
+            this.elements.apiKey.value = '';
+            this.updateApiStatus();
+            
+            this.showNotification('APIキー設定を解除しました', 'success');
+        }
     }
     
     // APIキーの状態表示を更新
