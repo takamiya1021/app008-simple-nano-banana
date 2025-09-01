@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Generator</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AI Image Generator</h1>
+            <p class="subtitle">nano-banana風の画像生成ツール</p>
+        </header>
+
+        <main>
+            <!-- API設定セクション -->
+            <section class="section api-config">
+                <h2>API設定</h2>
+                <div class="form-group">
+                    <label for="api-key">APIキー:</label>
+                    <div class="api-input-container">
+                        <input type="password" id="api-key" placeholder="APIキーを入力してください">
+                        <div id="api-status" class="api-status hidden">
+                            <span class="status-icon">✓</span>
+                            <span class="status-text">設定済み</span>
+                        </div>
+                    </div>
+                    <button id="save-config" class="btn btn-primary">保存</button>
+                </div>
+                <div class="model-info">
+                    <label>使用モデル:</label>
+                    <div class="model-display">
+                        <strong>Gemini 2.5 Flash Image</strong>
+                        <span class="model-nickname">(nano-banana)</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- プロンプト入力セクション -->
+            <section class="section prompt-input">
+                <h2>プロンプト入力</h2>
+                <div class="form-group">
+                    <textarea id="prompt-text" placeholder="生成したい画像の説明を入力してください..."></textarea>
+                    <div class="char-counter">
+                        <span id="char-count">0</span>/500
+                    </div>
+                </div>
+                <div class="prompt-history">
+                    <label>履歴:</label>
+                    <select id="prompt-history-select">
+                        <option value="">過去のプロンプトを選択</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- 参考画像入力セクション -->
+            <section class="section reference-image">
+                <h2>参考画像</h2>
+                <div class="image-upload-area" id="image-upload">
+                    <div class="upload-placeholder">
+                        <svg class="upload-icon" viewBox="0 0 24 24">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                        </svg>
+                        <p>ドラッグ&ドロップまたはクリックして画像を選択</p>
+                    </div>
+                    <input type="file" id="file-input" accept="image/*" hidden>
+                </div>
+                <div id="image-preview" class="image-preview hidden">
+                    <img id="preview-img" alt="プレビュー">
+                    <button id="remove-image" class="btn btn-danger">削除</button>
+                </div>
+            </section>
+
+            <!-- 制御ボタン -->
+            <section class="section controls">
+                <button id="generate-btn" class="btn btn-generate">生成開始</button>
+                <button id="reset-btn" class="btn btn-secondary">設定リセット</button>
+            </section>
+
+            <!-- 結果表示セクション -->
+            <section class="section result">
+                <h2>結果</h2>
+                <div id="result-area" class="result-area">
+                    <div class="result-placeholder">
+                        <p>生成された画像がここに表示されます</p>
+                    </div>
+                </div>
+                <div id="result-controls" class="result-controls hidden">
+                    <button id="download-btn" class="btn btn-primary">ダウンロード</button>
+                    <button id="regenerate-btn" class="btn btn-secondary">再生成</button>
+                </div>
+            </section>
+
+            <!-- ローディング表示 -->
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>画像を生成中...</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
