@@ -254,12 +254,40 @@ class AIImageGenerator {
             const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${this.apiKey}`;
             
             const requestBody = {
-                contents: [{
+                contents: {
+                    role: "user",
                     parts: [
                         { text: prompt }
                     ]
-                }]
+                },
+                tools: [
+                    {
+                        image_generation_tool: {
+                            number_of_images: 1,
+                            quality: "hd",
+                            output_format: "png"
+                        }
+                    }
+                ]
             };
+            
+            // 参考画像がある場合はリクエストに追加
+            if (this.selectedImage) {
+                // Base64データからMIMEタイプとデータを抽出
+                const base64Match = this.selectedImage.match(/^data:([^;]+);base64,(.+)$/);
+                if (base64Match) {
+                    const mimeType = base64Match[1];
+                    const base64Data = base64Match[2];
+                    
+                    // 画像データをpartsに追加
+                    requestBody.contents.parts.push({
+                        inlineData: {
+                            mimeType: mimeType,
+                            data: base64Data
+                        }
+                    });
+                }
+            }
             
             const response = await fetch(endpoint, {
                 method: 'POST',

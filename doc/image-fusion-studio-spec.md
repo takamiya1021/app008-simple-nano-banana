@@ -4,7 +4,7 @@
 シンプルなAI画像生成インターフェース。プロンプト入力と参考画像で画像を生成する。
 
 ## アプリケーション名
-**AI Image Generator** (nano-banana風)
+**AI Image Generator** (nano-banana)
 
 ## 主要機能
 
