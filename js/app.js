@@ -5,6 +5,7 @@ class AIImageGenerator {
         this.selectedModel = 'gemini-2.5-flash-image'; // 固定モデル
         this.promptHistory = [];
         this.selectedImages = []; // 複数画像対応
+        this.encryptionKey = 'nano-banana-secure-key-2024'; // アプリ固有の暗号化キー
         
         this.initializeElements();
         this.bindEvents();
@@ -80,6 +81,28 @@ class AIImageGenerator {
         });
     }
     
+    // セキュアな暗号化保存
+    encryptData(data) {
+        try {
+            return CryptoJS.AES.encrypt(JSON.stringify(data), this.encryptionKey).toString();
+        } catch (error) {
+            console.error('暗号化エラー');
+            return null;
+        }
+    }
+    
+    // セキュアな復号化読み取り
+    decryptData(encryptedData) {
+        try {
+            const bytes = CryptoJS.AES.decrypt(encryptedData, this.encryptionKey);
+            const decryptedString = bytes.toString(CryptoJS.enc.Utf8);
+            return JSON.parse(decryptedString);
+        } catch (error) {
+            console.error('復号化エラー');
+            return null;
+        }
+    }
+    
     // 設定の保存
     saveSettings() {
         this.apiKey = this.elements.apiKey.value.trim();
@@ -94,30 +117,53 @@ class AIImageGenerator {
             selectedModel: this.selectedModel // 固定値
         };
         
-        localStorage.setItem('ai-image-generator-settings', JSON.stringify(settings));
-        this.updateApiStatus();
-        this.showNotification('設定を保存しました', 'success');
+        // 暗号化してlocalStorageに保存
+        const encryptedSettings = this.encryptData(settings);
+        if (encryptedSettings) {
+            localStorage.setItem('ai-image-generator-settings', encryptedSettings);
+            this.updateApiStatus();
+            this.showNotification('設定を保存しました', 'success');
+        } else {
+            this.showNotification('設定の保存に失敗しました', 'error');
+        }
     }
     
     // 設定の読み込み
     loadSettings() {
         const saved = localStorage.getItem('ai-image-generator-settings');
         if (saved) {
-            const settings = JSON.parse(saved);
-            this.apiKey = settings.apiKey || '';
-            // selectedModelは固定のため読み込みのみ（UI更新不要）
-            
-            this.elements.apiKey.value = this.apiKey;
+            // 暗号化された設定を復号化
+            const settings = this.decryptData(saved);
+            if (settings) {
+                this.apiKey = settings.apiKey || '';
+                this.elements.apiKey.value = this.apiKey;
+            } else {
+                // 復号化失敗時は設定をリセット
+                localStorage.removeItem('ai-image-generator-settings');
+                console.warn('設定の復号化に失敗したため、設定をリセットしました');
+            }
         }
         
         // APIキーの状態を更新
         this.updateApiStatus();
         
-        // プロンプト履歴の読み込み
+        // プロンプト履歴の読み込み（暗号化対応）
         const historyData = localStorage.getItem('ai-image-generator-history');
         if (historyData) {
-            this.promptHistory = JSON.parse(historyData);
-            this.updateHistorySelect();
+            try {
+                // 履歴データが暗号化されているか確認
+                const decryptedHistory = this.decryptData(historyData);
+                if (decryptedHistory && Array.isArray(decryptedHistory)) {
+                    this.promptHistory = decryptedHistory;
+                } else {
+                    // 古い形式（平文）の場合
+                    this.promptHistory = JSON.parse(historyData);
+                }
+                this.updateHistorySelect();
+            } catch (error) {
+                console.warn('履歴の読み込みに失敗しました');
+                this.promptHistory = [];
+            }
         }
     }
     
@@ -353,14 +399,12 @@ class AIImageGenerator {
             
             if (!response.ok) {
                 const errorText = await response.text();
+                // セキュアなログ出力（APIキーを除外）
                 console.error('API Error Response Status:', response.status);
-                console.error('API Error Response Text:', errorText);
+                console.error('API Error Response Text:', errorText.substring(0, 200) + '...');
                 console.error('Request URL:', endpoint);
-                console.error('Request Headers:', {
-                    'Content-Type': 'application/json',
-                    'x-goog-api-key': this.apiKey.substring(0, 10) + '...'
-                });
-                console.error('Request Body:', JSON.stringify(requestBody, null, 2));
+                console.error('Request failed with status:', response.status);
+                // APIキーやリクエストボディの詳細はログに出力しない
                 
                 let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
                 try {
@@ -430,7 +474,8 @@ class AIImageGenerator {
             }
             
         } catch (error) {
-            console.error('生成エラー:', error);
+            // 機密情報を含まないセキュアなエラーログ
+            console.error('生成エラーが発生しました');
             this.showNotification(`画像生成エラー: ${error.message}`, 'error');
             
             // エラー時のフォールバック：デモ画像を生成
@@ -522,7 +567,11 @@ class AIImageGenerator {
             if (this.promptHistory.length > 20) { // 最大20件
                 this.promptHistory.pop();
             }
-            localStorage.setItem('ai-image-generator-history', JSON.stringify(this.promptHistory));
+            // 履歴も暗号化して保存
+            const encryptedHistory = this.encryptData(this.promptHistory);
+            if (encryptedHistory) {
+                localStorage.setItem('ai-image-generator-history', encryptedHistory);
+            }
             this.updateHistorySelect();
         }
     }
