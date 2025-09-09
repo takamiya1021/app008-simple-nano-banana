@@ -4,7 +4,7 @@ class AIImageGenerator {
         this.apiKey = '';
         this.selectedModel = 'gemini-2.5-flash-image'; // 固定モデル
         this.promptHistory = [];
-        this.selectedImage = null;
+        this.selectedImages = []; // 複数画像対応
         
         this.initializeElements();
         this.bindEvents();
@@ -23,9 +23,7 @@ class AIImageGenerator {
             promptHistorySelect: document.getElementById('prompt-history-select'),
             imageUpload: document.getElementById('image-upload'),
             fileInput: document.getElementById('file-input'),
-            imagePreview: document.getElementById('image-preview'),
-            previewImg: document.getElementById('preview-img'),
-            removeImage: document.getElementById('remove-image'),
+            imagesPreview: document.getElementById('images-preview'),
             generateBtn: document.getElementById('generate-btn'),
             resetBtn: document.getElementById('reset-btn'),
             resultArea: document.getElementById('result-area'),
@@ -59,8 +57,7 @@ class AIImageGenerator {
         this.elements.imageUpload.addEventListener('dragleave', (e) => this.handleDragLeave(e));
         this.elements.imageUpload.addEventListener('drop', (e) => this.handleDrop(e));
         
-        // 画像削除
-        this.elements.removeImage.addEventListener('click', () => this.removeImage());
+        // 画像削除は動的に追加されるボタンで処理
         
         // 生成開始
         this.elements.generateBtn.addEventListener('click', () => this.generateImage());
@@ -176,51 +173,111 @@ class AIImageGenerator {
         this.elements.imageUpload.classList.remove('dragover');
     }
     
-    // ドロップの処理
+    // ドロップの処理（複数対応）
     handleDrop(e) {
         e.preventDefault();
         this.elements.imageUpload.classList.remove('dragover');
         
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            this.processImageFile(files[0]);
-        }
+        const files = Array.from(e.dataTransfer.files);
+        this.processImageFiles(files);
     }
     
-    // 画像選択の処理
+    // 画像選択の処理（複数対応）
     handleImageSelect(e) {
-        const file = e.target.files[0];
-        if (file) {
-            this.processImageFile(file);
-        }
+        const files = Array.from(e.target.files);
+        this.processImageFiles(files);
     }
     
-    // 画像ファイルの処理
-    processImageFile(file) {
-        if (!file.type.startsWith('image/')) {
+    // 複数画像ファイルの処理
+    processImageFiles(files) {
+        // 画像ファイルのみフィルタリング
+        const imageFiles = files.filter(file => file.type.startsWith('image/'));
+        
+        if (imageFiles.length === 0) {
             this.showNotification('画像ファイルを選択してください', 'error');
             return;
         }
         
-        if (file.size > 10 * 1024 * 1024) { // 10MB制限
-            this.showNotification('ファイルサイズは10MB以下にしてください', 'error');
+        // 現在の画像数と新しい画像数の合計が3枚以下かチェック
+        if (this.selectedImages.length + imageFiles.length > 3) {
+            this.showNotification('参考画像は最大3枚までです', 'error');
             return;
         }
         
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            this.selectedImage = e.target.result;
-            this.elements.previewImg.src = this.selectedImage;
-            this.elements.imagePreview.classList.remove('hidden');
-        };
-        reader.readAsDataURL(file);
+        // 各ファイルを処理
+        imageFiles.forEach(file => {
+            if (file.size > 10 * 1024 * 1024) { // 10MB制限
+                this.showNotification(`${file.name}: ファイルサイズは10MB以下にしてください`, 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const imageData = {
+                    file: file,
+                    dataUrl: e.target.result,
+                    name: file.name
+                };
+                
+                this.selectedImages.push(imageData);
+                this.updateImagePreviews();
+            };
+            reader.readAsDataURL(file);
+        });
     }
     
-    // 画像の削除
-    removeImage() {
-        this.selectedImage = null;
-        this.elements.imagePreview.classList.add('hidden');
+    // 画像プレビューの更新
+    updateImagePreviews() {
+        const previewContainer = this.elements.imagesPreview;
+        previewContainer.innerHTML = '';
+        
+        this.selectedImages.forEach((imageData, index) => {
+            const previewDiv = document.createElement('div');
+            previewDiv.className = 'image-preview-item';
+            previewDiv.innerHTML = `
+                <img src="${imageData.dataUrl}" alt="${imageData.name}" class="preview-image">
+                <div class="image-info">
+                    <span class="image-name">${imageData.name}</span>
+                    <button class="btn btn-danger btn-small remove-image-btn" data-index="${index}">削除</button>
+                </div>
+            `;
+            
+            // 削除ボタンのイベントリスナー追加
+            const removeBtn = previewDiv.querySelector('.remove-image-btn');
+            removeBtn.addEventListener('click', () => this.removeImage(index));
+            
+            previewContainer.appendChild(previewDiv);
+        });
+        
+        // アップロードエリアの表示/非表示
+        if (this.selectedImages.length >= 3) {
+            this.elements.imageUpload.style.display = 'none';
+        } else {
+            this.elements.imageUpload.style.display = 'block';
+        }
+    }
+    
+    // 指定した画像の削除
+    removeImage(index) {
+        this.selectedImages.splice(index, 1);
+        this.updateImagePreviews();
+        
+        // ファイル入力をリセット
         this.elements.fileInput.value = '';
+    }
+    
+    // サイズプロンプトを生成
+    getSizePrompt(sizeRatio) {
+        switch(sizeRatio) {
+            case '1:1':
+                return ' in square format (1:1 aspect ratio)';
+            case '9:16':
+                return ' in portrait format (9:16 aspect ratio, vertical)';
+            case '16:9':
+                return ' in landscape format (16:9 aspect ratio, horizontal)';
+            default:
+                return ' in square format (1:1 aspect ratio)';
+        }
     }
     
     // 画像生成（実際のAPI）
@@ -242,6 +299,10 @@ class AIImageGenerator {
             return;
         }
         
+        // 選択されたサイズを取得
+        const selectedSize = document.getElementById('image-size-select').value;
+        const sizePrompt = this.getSizePrompt(selectedSize);
+        
         // 履歴に追加
         this.addToHistory(prompt);
         
@@ -251,95 +312,121 @@ class AIImageGenerator {
         
         try {
             // 実際のGemini API呼び出し
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${this.apiKey}`;
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent`;
             
             const requestBody = {
-                contents: {
-                    role: "user",
+                contents: [{
                     parts: [
-                        { text: prompt }
+                        { text: `Generate an image: ${prompt}${sizePrompt}` }
                     ]
-                },
-                tools: [
-                    {
-                        image_generation_tool: {
-                            number_of_images: 1,
-                            quality: "hd",
-                            output_format: "png"
-                        }
-                    }
-                ]
+                }]
             };
             
-            // 参考画像がある場合はリクエストに追加
-            if (this.selectedImage) {
-                // Base64データからMIMEタイプとデータを抽出
-                const base64Match = this.selectedImage.match(/^data:([^;]+);base64,(.+)$/);
-                if (base64Match) {
-                    const mimeType = base64Match[1];
-                    const base64Data = base64Match[2];
-                    
-                    // 画像データをpartsに追加
-                    requestBody.contents.parts.push({
-                        inlineData: {
-                            mimeType: mimeType,
-                            data: base64Data
-                        }
-                    });
-                }
+            // 参考画像がある場合はリクエストに追加（最大3枚）
+            if (this.selectedImages.length > 0) {
+                this.selectedImages.forEach(imageData => {
+                    // Base64データからMIMEタイプとデータを抽出
+                    const base64Match = imageData.dataUrl.match(/^data:([^;]+);base64,(.+)$/);
+                    if (base64Match) {
+                        const mimeType = base64Match[1];
+                        const base64Data = base64Match[2];
+                        
+                        // 画像データをpartsに追加
+                        requestBody.contents[0].parts.push({
+                            inlineData: {
+                                mimeType: mimeType,
+                                data: base64Data
+                            }
+                        });
+                    }
+                });
             }
             
             const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'x-goog-api-key': this.apiKey
                 },
                 body: JSON.stringify(requestBody)
             });
             
             if (!response.ok) {
-                const errorData = await response.json();
-                console.error('API Error:', errorData);
-                throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+                const errorText = await response.text();
+                console.error('API Error Response Status:', response.status);
+                console.error('API Error Response Text:', errorText);
+                console.error('Request URL:', endpoint);
+                console.error('Request Headers:', {
+                    'Content-Type': 'application/json',
+                    'x-goog-api-key': this.apiKey.substring(0, 10) + '...'
+                });
+                console.error('Request Body:', JSON.stringify(requestBody, null, 2));
+                
+                let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                try {
+                    const errorData = JSON.parse(errorText);
+                    if (errorData.error && errorData.error.message) {
+                        errorMessage = errorData.error.message;
+                    }
+                } catch (e) {
+                    // JSONパースできない場合はそのままテキストを使用
+                }
+                
+                throw new Error(errorMessage);
             }
             
             const responseData = await response.json();
             console.log('API Response:', responseData);
+            console.log('API Response Structure:', JSON.stringify(responseData, null, 2));
             
             // レスポンスから画像を処理（公式ドキュメント準拠）
             if (responseData.candidates && responseData.candidates.length > 0) {
                 const candidate = responseData.candidates[0];
-                const parts = candidate.content.parts;
                 
-                // Base64画像データを探す（公式ドキュメントの方式）
-                const imagePart = parts.find(part => part.inlineData);
-                
-                if (imagePart && imagePart.inlineData) {
-                    const base64Image = imagePart.inlineData.data;
-                    const mimeType = imagePart.inlineData.mimeType || 'image/png';
-                    const imageUrl = `data:${mimeType};base64,${base64Image}`;
+                if (candidate.content && candidate.content.parts) {
+                    const parts = candidate.content.parts;
+                    let imageFound = false;
                     
-                    console.log('Generated image found!');
-                    this.displayResult(imageUrl);
-                    this.showNotification('画像生成が成功しました！', 'success');
+                    // 各パートをチェックして画像データを探す
+                    for (const part of parts) {
+                        if (part.inlineData) {
+                            // 画像データが見つかった
+                            const base64Image = part.inlineData.data;
+                            const mimeType = part.inlineData.mimeType || 'image/png';
+                            const imageUrl = `data:${mimeType};base64,${base64Image}`;
+                            
+                            console.log('Generated image found!');
+                            this.displayResult(imageUrl);
+                            this.showNotification('画像生成が成功しました！', 'success');
+                            imageFound = true;
+                            break;
+                        }
+                    }
+                    
+                    if (!imageFound) {
+                        // 画像が含まれていない場合
+                        console.log('No image in response, checking for text...');
+                        const textContent = parts.map(part => part.text || '').join('');
+                        console.log('Text response:', textContent);
+                        
+                        this.showNotification('画像生成に失敗しました。プロンプトを変更してお試しください。', 'error');
+                        await this.generateFallbackImage(prompt);
+                    }
                 } else {
-                    // テキストレスポンスの場合
-                    const textContent = parts.map(part => part.text || '').join('');
-                    console.log('Text response received:', textContent);
-                    console.log('API parts structure:', JSON.stringify(parts, null, 2));
-                    
-                    // parts配列の詳細をチェック
-                    parts.forEach((part, index) => {
-                        console.log(`Part ${index}:`, JSON.stringify(part, null, 2));
-                    });
-                    
-                    this.showNotification('画像生成に失敗しました。プロンプトを変更してお試しください。', 'error');
-                    
-                    // フォールバック：デモ画像を表示
+                    console.error('Unexpected response structure:', responseData);
+                    this.showNotification('予期しないレスポンス形式です', 'error');
                     await this.generateFallbackImage(prompt);
                 }
+            } else if (responseData.error) {
+                console.error('API Error:', responseData.error);
+                this.showNotification(`エラー: ${responseData.error.message || 'APIエラーが発生しました'}`, 'error');
+                await this.generateFallbackImage(prompt);
             } else {
-                throw new Error('No valid response from API');
+                // candidatesが存在しない場合
+                console.log('No candidates in response - possibly model limitation');
+                console.log('Response only contains metadata:', responseData);
+                this.showNotification('このモデルでは画像生成がサポートされていない可能性があります', 'error');
+                await this.generateFallbackImage(prompt);
             }
             
         } catch (error) {
@@ -459,7 +546,8 @@ class AIImageGenerator {
             this.elements.apiKey.value = '';
             this.elements.promptText.value = '';
             this.updateCharCount();
-            this.removeImage();
+            this.selectedImages = [];
+            this.updateImagePreviews();
             
             this.apiKey = '';
             this.promptHistory = [];

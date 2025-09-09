@@ -57,21 +57,34 @@
                 </div>
             </section>
 
+            <!-- 画像サイズ選択セクション -->
+            <section class="section image-size">
+                <h2>画像サイズ</h2>
+                <div class="form-group">
+                    <label for="image-size-select">アスペクト比:</label>
+                    <select id="image-size-select" class="size-select">
+                        <option value="1:1">正方形 (1:1)</option>
+                        <option value="9:16">縦長 (9:16)</option>
+                        <option value="16:9">横長 (16:9)</option>
+                    </select>
+                </div>
+            </section>
+
             <!-- 参考画像入力セクション -->
             <section class="section reference-image">
-                <h2>参考画像</h2>
+                <h2>参考画像（最大3枚）</h2>
                 <div class="image-upload-area" id="image-upload">
                     <div class="upload-placeholder">
                         <svg class="upload-icon" viewBox="0 0 24 24">
                             <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
                         </svg>
                         <p>ドラッグ&ドロップまたはクリックして画像を選択</p>
+                        <p class="upload-hint">複数枚選択可能（最大3枚）</p>
                     </div>
-                    <input type="file" id="file-input" accept="image/*" hidden>
+                    <input type="file" id="file-input" accept="image/*" multiple hidden>
                 </div>
-                <div id="image-preview" class="image-preview hidden">
-                    <img id="preview-img" alt="プレビュー">
-                    <button id="remove-image" class="btn btn-danger">削除</button>
+                <div id="images-preview" class="images-preview">
+                    <!-- 画像プレビューが動的に追加される -->
                 </div>
             </section>
 
