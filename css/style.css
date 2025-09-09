@@ -472,3 +472,25 @@ textarea {
 .size-select:hover {
     border-color: #cbd5e1;
 }
+
+/* セキュリティ情報のスタイル */
+.security-info {
+    margin: 0.75rem 0;
+    padding: 0.75rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    border-left: 4px solid #10b981;
+}
+
+.security-note {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #374151;
+    line-height: 1.4;
+}
+
+.security-note strong {
+    color: #10b981;
+    font-weight: 600;
+}
