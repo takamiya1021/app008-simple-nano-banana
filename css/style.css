@@ -473,9 +473,23 @@ textarea {
     border-color: #cbd5e1;
 }
 
+/* API設定ボタンとセキュリティ情報の横並びレイアウト */
+.api-buttons-container {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    margin-top: 0.75rem;
+}
+
+.api-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
 /* セキュリティ情報のスタイル */
 .security-info {
-    margin: 0.75rem 0;
+    flex: 1;
     padding: 0.75rem;
     background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
     border: 1px solid #cbd5e1;
@@ -493,4 +507,20 @@ textarea {
 .security-note strong {
     color: #10b981;
     font-weight: 600;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .api-buttons-container {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .security-info {
+        order: 2;
+    }
+    
+    .api-buttons {
+        order: 1;
+    }
 }
