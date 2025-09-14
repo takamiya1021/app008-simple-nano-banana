@@ -1,0 +1,38 @@
+{
+  "name": "Daily Affirmation - 日々のアファメーション",
+  "short_name": "Daily Affirmation",
+  "description": "あなたの心を支える毎日のアファメーションアプリ。年代別・シーン別の言葉で、いつでもどこでもポジティブな気持ちになれます。",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#f97316",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "ja",
+  "dir": "ltr",
+  "categories": ["lifestyle", "wellness", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "今日の特別なメッセージ",
+      "short_name": "特別",
+      "description": "あなた専用の特別なアファメーション",
+      "url": "/daily-special"
+    },
+    {
+      "name": "お気に入り",
+      "short_name": "お気に入り",
+      "description": "保存したお気に入りのアファメーション",
+      "url": "/favorites"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
