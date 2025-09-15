@@ -5,12 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Image Generator</title>
     <link rel="stylesheet" href="css/style.css">
+
+    <!-- PWA設定 -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="nano-banana">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9InVybCgjZ3JhZGllbnQwX2xpbmVhcl8xXzEpIi8+CjxwYXRoIGQ9Ik05NiA2NEMxMDQuODM3IDY0IDExMiA3MS4xNjMgMTEyIDgwVjExMkMxMTIgMTIwLjgzNyAxMDQuODM3IDEyOCA5NiAxMjhIODBDNzEuMTYzIDEyOCA2NCAxMjAuODM3IDY0IDExMlY4MEM2NCA3MS4xNjMgNzEuMTYzIDY0IDgwIDY0SDk2WiIgZmlsbD0id2hpdGUiLz4KPGNpcmNsZSBjeD0iMTQ0IiBjeT0iNDgiIHI9IjE2IiBmaWxsPSJ3aGl0ZSIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDBfbGluZWFyXzFfMSIgeDE9IjAiIHkxPSIwIiB4Mj0iMTkyIiB5Mj0iMTkyIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CjxzdG9wIHN0b3AtY29sb3I9IiM2NjdFRUEiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjNzY0QkEyIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHN2Zz4K">
     <!-- セキュリティヘッダー -->
-    <meta http-equiv="Content-Security-Policy" 
-          content="default-src 'self'; 
-                   script-src 'self' 'unsafe-inline' cdnjs.cloudflare.com; 
-                   style-src 'self' 'unsafe-inline' fonts.googleapis.com cdnjs.cloudflare.com; 
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self';
+                   script-src 'self' 'unsafe-inline' cdnjs.cloudflare.com;
+                   style-src 'self' 'unsafe-inline' fonts.googleapis.com cdnjs.cloudflare.com;
                    font-src fonts.gstatic.com cdnjs.cloudflare.com;
+                   img-src 'self' data:;
                    connect-src 'self' generativelanguage.googleapis.com;">
     <!-- 暗号化ライブラリ -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js" 
@@ -29,26 +38,22 @@
             <section class="section api-config">
                 <h2>API設定</h2>
                 <div class="form-group">
-                    <label for="api-key">APIキー:</label>
+                    <label for="api-key">Gemini APIキー:</label>
                     <div class="api-input-container">
-                        <input type="password" id="api-key" placeholder="APIキーを入力してください">
+                        <input type="password" id="api-key" placeholder="Gemini APIキーを入力してください">
                         <div id="api-status" class="api-status hidden">
                             <span class="status-icon">✓</span>
                             <span class="status-text">設定済み</span>
                         </div>
                     </div>
-                    <div class="api-buttons-container">
-                        <div class="api-buttons">
-                            <button id="save-config" class="btn btn-primary">保存</button>
-                            <button id="clear-config" class="btn btn-danger">解除</button>
-                        </div>
-                        <div class="security-info">
-                            <p class="security-note">
-                                🔒 <strong>安全保存</strong>: APIキーはAES暗号化されてあなたのブラウザにのみ保存されます。
-                                当サーバーには送信されません。
-                            </p>
-                        </div>
+                    <div class="api-buttons">
+                        <button id="save-config" class="btn btn-primary">保存</button>
+                        <button id="clear-config" class="btn btn-danger">解除</button>
                     </div>
+                    <p class="security-note">
+                        🔒 <strong>安全保存</strong>: Gemini APIキーはAES暗号化されてあなたのブラウザにのみ保存されます。
+                        当サーバーには送信されません。
+                    </p>
                 </div>
                 <div class="model-info">
                     <label>使用モデル:</label>

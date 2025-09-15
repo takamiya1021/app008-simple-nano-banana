@@ -178,15 +178,6 @@ textarea {
     font-size: 1rem;
 }
 
-.api-buttons {
-    display: flex;
-    gap: 0.75rem;
-    margin-top: 0.75rem;
-}
-
-.api-buttons .btn {
-    margin: 0;
-}
 
 .prompt-history {
     margin-top: 1rem;
@@ -417,10 +408,13 @@ textarea {
 
 .preview-image {
     width: 100%;
-    height: 100px;
-    object-fit: cover;
+    height: 120px;
+    object-fit: contain;
     border-radius: 6px;
     margin-bottom: 0.5rem;
+    display: block;
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
 }
 
 .image-info {
@@ -473,54 +467,32 @@ textarea {
     border-color: #cbd5e1;
 }
 
-/* API設定ボタンとセキュリティ情報の横並びレイアウト */
-.api-buttons-container {
-    display: flex;
-    gap: 1rem;
-    align-items: flex-start;
-    margin-top: 0.75rem;
-}
-
+/* API設定ボタンのスタイル */
 .api-buttons {
     display: flex;
-    gap: 0.5rem;
-    flex-shrink: 0;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    align-items: stretch;
 }
 
-/* セキュリティ情報のスタイル */
-.security-info {
-    flex: 1;
-    padding: 0.75rem;
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    border-left: 4px solid #10b981;
-}
-
-.security-note {
+.api-buttons .btn {
     margin: 0;
+    height: 40px;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* セキュリティ情報のスタイル（外枠なし） */
+.security-note {
+    margin: 0.75rem 0 0 0;
     font-size: 0.85rem;
-    color: #374151;
+    color: #6b7280;
     line-height: 1.4;
 }
 
 .security-note strong {
     color: #10b981;
     font-weight: 600;
-}
-
-/* レスポンシブ対応 */
-@media (max-width: 768px) {
-    .api-buttons-container {
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-    
-    .security-info {
-        order: 2;
-    }
-    
-    .api-buttons {
-        order: 1;
-    }
 }

@@ -1,3 +1,190 @@
+// エラー分析・詳細メッセージ生成クラス
+class ErrorAnalyzer {
+    constructor() {
+        this.geminiErrorCodes = {
+            // 400系エラー
+            400: {
+                type: 'validation',
+                title: 'リクエストエラー',
+                message: 'プロンプトまたは画像データに問題があります'
+            },
+            403: {
+                type: 'permission',
+                title: 'APIキーエラー',
+                message: 'Gemini APIキーが無効または権限がありません'
+            },
+            429: {
+                type: 'rate_limit',
+                title: 'API使用制限',
+                message: 'APIの使用量制限に達しました。しばらく待ってから再試行してください'
+            },
+            // 500系エラー
+            500: {
+                type: 'server',
+                title: 'サーバーエラー',
+                message: 'Gemini APIサーバーで一時的な問題が発生しています'
+            },
+            503: {
+                type: 'unavailable',
+                title: 'サービス利用不可',
+                message: 'Gemini APIサービスが一時的に利用できません'
+            }
+        };
+
+        this.contentFilters = {
+            'SAFETY': {
+                title: 'コンテンツ安全性',
+                message: 'プロンプトに安全でない内容が含まれている可能性があります',
+                suggestion: '暴力的、性的、または有害な表現を避けて、より中性的な表現に変更してください'
+            },
+            'PROHIBITED': {
+                title: '禁止コンテンツ',
+                message: 'プロンプトに禁止されたコンテンツが含まれています',
+                suggestion: '著作権のあるキャラクターや実在人物の名前を避け、一般的な説明を使用してください'
+            },
+            'BLOCKED': {
+                title: 'ブロックされたコンテンツ',
+                message: 'このプロンプトは安全性フィルターによってブロックされました',
+                suggestion: 'より具体的で建設的な表現に変更し、曖昧な表現を避けてください'
+            }
+        };
+    }
+
+    // APIエラーレスポンスの詳細解析
+    analyzeApiError(response, responseText) {
+        let errorData;
+        try {
+            errorData = JSON.parse(responseText);
+        } catch (e) {
+            errorData = { message: responseText };
+        }
+
+        const statusCode = response.status;
+        const baseInfo = this.geminiErrorCodes[statusCode] || {
+            type: 'unknown',
+            title: 'エラー',
+            message: '予期しないエラーが発生しました'
+        };
+
+        return {
+            status: statusCode,
+            type: baseInfo.type,
+            title: baseInfo.title,
+            message: baseInfo.message,
+            details: this.extractErrorDetails(errorData),
+            suggestions: this.generateSuggestions(statusCode, errorData),
+            canRetry: this.isRetryable(statusCode)
+        };
+    }
+
+    // エラー詳細の抽出
+    extractErrorDetails(errorData) {
+        const details = [];
+
+        // Gemini API固有のエラー構造を解析
+        if (errorData.error) {
+            if (errorData.error.message) {
+                details.push(`詳細: ${errorData.error.message}`);
+            }
+            if (errorData.error.code) {
+                details.push(`エラーコード: ${errorData.error.code}`);
+            }
+            if (errorData.error.status) {
+                details.push(`ステータス: ${errorData.error.status}`);
+            }
+        }
+
+        // candidates情報の確認
+        if (errorData.candidates && errorData.candidates.length > 0) {
+            const candidate = errorData.candidates[0];
+            if (candidate.finishReason) {
+                const filterInfo = this.analyzeFinishReason(candidate.finishReason);
+                if (filterInfo) {
+                    details.push(filterInfo);
+                }
+            }
+        }
+
+        return details;
+    }
+
+    // finishReasonの分析
+    analyzeFinishReason(finishReason) {
+        const reasons = {
+            'SAFETY': 'コンテンツが安全性フィルターによってブロックされました',
+            'RECITATION': '著作権保護により生成が停止されました',
+            'MAX_TOKENS': 'トークン数の制限に達しました',
+            'PROHIBITED_CONTENT': '禁止されたコンテンツが検出されました'
+        };
+
+        return reasons[finishReason] || null;
+    }
+
+    // 解決提案の生成
+    generateSuggestions(statusCode, errorData) {
+        const suggestions = [];
+
+        switch (statusCode) {
+            case 400:
+                suggestions.push('プロンプトを見直し、より具体的で明確な表現に変更してください');
+                suggestions.push('参考画像のファイルサイズを確認し、10MB以下にしてください');
+                break;
+            case 403:
+                suggestions.push('Gemini APIキーが正しく設定されているか確認してください');
+                suggestions.push('APIキーの使用権限を確認してください');
+                break;
+            case 429:
+                suggestions.push('しばらく時間をおいてから再試行してください');
+                suggestions.push('API使用量を確認し、制限内で利用してください');
+                break;
+            case 500:
+            case 503:
+                suggestions.push('しばらく時間をおいてから再試行してください');
+                suggestions.push('問題が続く場合は、デモモードをご利用ください');
+                break;
+        }
+
+        // コンテンツフィルター関連の提案
+        if (errorData.candidates) {
+            suggestions.push('より中性的で建設的な表現を使用してください');
+            suggestions.push('具体的すぎる人物名や著作物名を避けてください');
+        }
+
+        return suggestions;
+    }
+
+    // リトライ可能かどうかの判定
+    isRetryable(statusCode) {
+        const retryableCodes = [408, 429, 500, 502, 503, 504];
+        return retryableCodes.includes(statusCode);
+    }
+
+    // ユーザー向けエラーメッセージの生成
+    generateUserFriendlyMessage(errorInfo) {
+        let message = `**${errorInfo.title}**\n\n${errorInfo.message}`;
+
+        if (errorInfo.details.length > 0) {
+            message += '\n\n**詳細情報:**\n';
+            errorInfo.details.forEach(detail => {
+                message += `• ${detail}\n`;
+            });
+        }
+
+        if (errorInfo.suggestions.length > 0) {
+            message += '\n**解決方法:**\n';
+            errorInfo.suggestions.forEach(suggestion => {
+                message += `• ${suggestion}\n`;
+            });
+        }
+
+        if (errorInfo.canRetry) {
+            message += '\n💡 このエラーは再試行で解決する可能性があります。';
+        }
+
+        return message;
+    }
+}
+
 // AI画像生成アプリのメイン機能
 class AIImageGenerator {
     constructor() {
@@ -6,7 +193,8 @@ class AIImageGenerator {
         this.promptHistory = [];
         this.selectedImages = []; // 複数画像対応
         this.encryptionKey = 'nano-banana-secure-key-2024'; // アプリ固有の暗号化キー
-        
+        this.errorAnalyzer = new ErrorAnalyzer(); // エラー分析機能
+
         this.initializeElements();
         this.bindEvents();
         this.loadSettings();
@@ -108,7 +296,7 @@ class AIImageGenerator {
         this.apiKey = this.elements.apiKey.value.trim();
         
         if (!this.apiKey) {
-            this.showNotification('APIキーを入力してください', 'error');
+            this.showNotification('Gemini APIキーを入力してください', 'error');
             return;
         }
         
@@ -259,15 +447,28 @@ class AIImageGenerator {
             
             const reader = new FileReader();
             reader.onload = (e) => {
+                const dataUrl = e.target.result;
+                console.log(`ファイル読み込み完了: ${file.name}`);
+                console.log(`DataURL先頭: ${dataUrl.substring(0, 50)}...`);
+
                 const imageData = {
                     file: file,
-                    dataUrl: e.target.result,
-                    name: file.name
+                    dataUrl: dataUrl,
+                    name: file.name,
+                    size: file.size,
+                    type: file.type
                 };
-                
+
                 this.selectedImages.push(imageData);
+                console.log(`画像配列に追加: ${this.selectedImages.length}件`);
                 this.updateImagePreviews();
             };
+
+            reader.onerror = (e) => {
+                console.error(`ファイル読み込みエラー: ${file.name}`, e);
+                this.showNotification(`${file.name}の読み込みに失敗しました`, 'error');
+            };
+
             reader.readAsDataURL(file);
         });
     }
@@ -276,25 +477,65 @@ class AIImageGenerator {
     updateImagePreviews() {
         const previewContainer = this.elements.imagesPreview;
         previewContainer.innerHTML = '';
-        
+
         this.selectedImages.forEach((imageData, index) => {
             const previewDiv = document.createElement('div');
             previewDiv.className = 'image-preview-item';
-            previewDiv.innerHTML = `
-                <img src="${imageData.dataUrl}" alt="${imageData.name}" class="preview-image">
-                <div class="image-info">
-                    <span class="image-name">${imageData.name}</span>
-                    <button class="btn btn-danger btn-small remove-image-btn" data-index="${index}">削除</button>
-                </div>
-            `;
-            
-            // 削除ボタンのイベントリスナー追加
-            const removeBtn = previewDiv.querySelector('.remove-image-btn');
+
+            // 画像要素を直接作成してエラーハンドリングを追加
+            const img = document.createElement('img');
+            img.src = imageData.dataUrl;
+            img.alt = imageData.name;
+            img.className = 'preview-image';
+
+            // 画像読み込みエラー時の処理
+            img.onerror = (e) => {
+                console.error(`画像の読み込みに失敗: ${imageData.name}`, e);
+                console.error(`DataURL: ${imageData.dataUrl.substring(0, 100)}...`);
+                img.style.display = 'none';
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'image-error';
+                errorDiv.style.cssText = `
+                    width: 100%;
+                    height: 100px;
+                    background: #f56565;
+                    color: white;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 6px;
+                    margin-bottom: 0.5rem;
+                    font-size: 0.8rem;
+                `;
+                errorDiv.textContent = '画像読み込みエラー';
+                img.parentNode.insertBefore(errorDiv, img);
+            };
+
+            // 画像読み込み成功時の処理
+            img.onload = () => {
+                console.log(`画像読み込み成功: ${imageData.name}`);
+            };
+
+            const imageInfo = document.createElement('div');
+            imageInfo.className = 'image-info';
+
+            const imageName = document.createElement('span');
+            imageName.className = 'image-name';
+            imageName.textContent = imageData.name;
+
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'btn btn-danger btn-small remove-image-btn';
+            removeBtn.textContent = '削除';
             removeBtn.addEventListener('click', () => this.removeImage(index));
-            
+
+            imageInfo.appendChild(imageName);
+            imageInfo.appendChild(removeBtn);
+
+            previewDiv.appendChild(img);
+            previewDiv.appendChild(imageInfo);
             previewContainer.appendChild(previewDiv);
         });
-        
+
         // アップロードエリアの表示/非表示
         if (this.selectedImages.length >= 3) {
             this.elements.imageUpload.style.display = 'none';
@@ -336,7 +577,7 @@ class AIImageGenerator {
         }
         
         if (!this.apiKey) {
-            this.showNotification('APIキーを設定してください', 'error');
+            this.showNotification('Gemini APIキーを設定してください', 'error');
             return;
         }
         
@@ -399,24 +640,24 @@ class AIImageGenerator {
             
             if (!response.ok) {
                 const errorText = await response.text();
+
+                // 詳細エラー分析
+                const errorInfo = this.errorAnalyzer.analyzeApiError(response, errorText);
+
                 // セキュアなログ出力（APIキーを除外）
-                console.error('API Error Response Status:', response.status);
-                console.error('API Error Response Text:', errorText.substring(0, 200) + '...');
+                console.error('API Error Analysis:', {
+                    status: errorInfo.status,
+                    type: errorInfo.type,
+                    title: errorInfo.title,
+                    canRetry: errorInfo.canRetry
+                });
                 console.error('Request URL:', endpoint);
-                console.error('Request failed with status:', response.status);
-                // APIキーやリクエストボディの詳細はログに出力しない
-                
-                let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-                try {
-                    const errorData = JSON.parse(errorText);
-                    if (errorData.error && errorData.error.message) {
-                        errorMessage = errorData.error.message;
-                    }
-                } catch (e) {
-                    // JSONパースできない場合はそのままテキストを使用
-                }
-                
-                throw new Error(errorMessage);
+
+                // 詳細エラーダイアログを表示
+                this.showDetailedErrorDialog(errorInfo);
+
+                // 従来のエラー処理も継続（フォールバック用）
+                throw new Error(errorInfo.message);
             }
             
             const responseData = await response.json();
@@ -626,7 +867,7 @@ class AIImageGenerator {
             transform: translateX(100%);
             transition: transform 0.3s ease;
         `;
-        
+
         switch (type) {
             case 'success':
                 notification.style.background = '#48bb78';
@@ -637,15 +878,15 @@ class AIImageGenerator {
             default:
                 notification.style.background = '#4299e1';
         }
-        
+
         notification.textContent = message;
         document.body.appendChild(notification);
-        
+
         // アニメーション
         setTimeout(() => {
             notification.style.transform = 'translateX(0)';
         }, 10);
-        
+
         setTimeout(() => {
             notification.style.transform = 'translateX(100%)';
             setTimeout(() => {
@@ -653,10 +894,85 @@ class AIImageGenerator {
             }, 300);
         }, 3000);
     }
+
+    // 詳細エラーダイアログの表示
+    showDetailedErrorDialog(errorInfo) {
+        // 詳細エラー表示用のモーダルダイアログ
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1002;
+        `;
+
+        const dialog = document.createElement('div');
+        dialog.style.cssText = `
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            margin: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        `;
+
+        const userMessage = this.errorAnalyzer.generateUserFriendlyMessage(errorInfo);
+        const formattedMessage = userMessage.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+        dialog.innerHTML = `
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: #e53e3e; margin: 0 0 16px 0; font-size: 1.2rem;">
+                    🚨 ${errorInfo.title}
+                </h3>
+                <div style="line-height: 1.6; color: #4a5568;">
+                    ${formattedMessage}
+                </div>
+            </div>
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                ${errorInfo.canRetry ?
+                    '<button id="retry-btn" style="background: #4299e1; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">再試行</button>' :
+                    ''
+                }
+                <button id="close-error-dialog" style="background: #718096; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">閉じる</button>
+            </div>
+        `;
+
+        modal.appendChild(dialog);
+        document.body.appendChild(modal);
+
+        // イベントリスナー
+        const closeBtn = dialog.querySelector('#close-error-dialog');
+        closeBtn.addEventListener('click', () => {
+            document.body.removeChild(modal);
+        });
+
+        const retryBtn = dialog.querySelector('#retry-btn');
+        if (retryBtn) {
+            retryBtn.addEventListener('click', () => {
+                document.body.removeChild(modal);
+                this.generateImage(); // 再試行
+            });
+        }
+
+        // モーダル背景クリックで閉じる
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                document.body.removeChild(modal);
+            }
+        });
+    }
     
     // API設定の解除
     clearSettings() {
-        if (confirm('APIキー設定を解除しますか？')) {
+        if (confirm('Gemini APIキー設定を解除しますか？')) {
             // LocalStorageから設定を削除
             localStorage.removeItem('ai-image-generator-settings');
             
@@ -665,7 +981,7 @@ class AIImageGenerator {
             this.elements.apiKey.value = '';
             this.updateApiStatus();
             
-            this.showNotification('APIキー設定を解除しました', 'success');
+            this.showNotification('Gemini APIキー設定を解除しました', 'success');
         }
     }
     
@@ -682,4 +998,44 @@ class AIImageGenerator {
 // アプリケーションの初期化
 document.addEventListener('DOMContentLoaded', () => {
     new AIImageGenerator();
+
+    // サービスワーカーの登録（PWA対応）
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+                console.log('PWA: サービスワーカー登録成功:', registration);
+            })
+            .catch(error => {
+                console.log('PWA: サービスワーカー登録失敗:', error);
+            });
+    }
+
+    // PWAインストールプロンプト
+    let deferredPrompt;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('PWA: インストールプロンプトが利用可能');
+        e.preventDefault();
+        deferredPrompt = e;
+
+        // インストールバナーを表示（3秒後）
+        setTimeout(() => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('PWA: インストールが受け入れられました');
+                    } else {
+                        console.log('PWA: インストールが拒否されました');
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }, 3000);
+    });
+
+    window.addEventListener('appinstalled', () => {
+        console.log('PWA: アプリがインストールされました');
+        deferredPrompt = null;
+    });
 });
