@@ -1,0 +1,604 @@
+{
+  "affirmations": [
+    {
+      "id": "aff_001",
+      "text": "私は今日という日を大切にし、新たな可能性に心を開きます",
+      "textEn": "I cherish this day and open my heart to new possibilities",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "自信",
+        "scene": "朝",
+        "ageGroup": "20代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_002",
+      "text": "私は自分の価値を認め、今日も素晴らしい一日を送ります",
+      "textEn": "I recognize my worth and will have a wonderful day today",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "自信",
+        "scene": "朝",
+        "ageGroup": "30代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_003",
+      "text": "私の経験と知恵は、今日の挑戦を乗り越える力になります",
+      "textEn": "My experience and wisdom give me strength to overcome today's challenges",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "自信",
+        "scene": "朝",
+        "ageGroup": "40代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_004",
+      "text": "私は長年培った知識を活かし、周りの人々に貢献します",
+      "textEn": "I use my years of knowledge to contribute to others",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "自信",
+        "scene": "朝",
+        "ageGroup": "50代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_005",
+      "text": "私の人生経験は貴重な宝物であり、今日も意味のある時間を過ごします",
+      "textEn": "My life experience is a precious treasure, and I will spend meaningful time today",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "自信",
+        "scene": "朝",
+        "ageGroup": "60代以上"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_006",
+      "text": "今日一日頑張った自分を誇りに思います。明日はもっと素晴らしい日になります",
+      "textEn": "I am proud of myself for working hard today. Tomorrow will be even more wonderful",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "自信",
+        "scene": "夜",
+        "ageGroup": "20代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_007",
+      "text": "私は今日の学びを糧にして、明日はより良い自分になります",
+      "textEn": "I will use today's learning as nourishment to become a better self tomorrow",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "自信",
+        "scene": "夜",
+        "ageGroup": "30代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_008",
+      "text": "私は仕事での挑戦を成長の機会と捉え、最善を尽くします",
+      "textEn": "I see challenges at work as opportunities for growth and give my best",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "自信",
+        "scene": "仕事",
+        "ageGroup": "30代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_009",
+      "text": "私は愛を与えることで、より多くの愛を受け取ります",
+      "textEn": "By giving love, I receive even more love in return",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "愛",
+        "scene": "朝",
+        "ageGroup": "20代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_010",
+      "text": "私の心は愛で満たされ、周りの人々にその温かさを分けてあげます",
+      "textEn": "My heart is filled with love, and I share that warmth with those around me",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "愛",
+        "scene": "朝",
+        "ageGroup": "40代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_011",
+      "text": "Stay hungry, stay foolish",
+      "textEn": "Stay hungry, stay foolish",
+      "author": "スティーブ・ジョブズ",
+      "source": "スタンフォード大学卒業式スピーチ",
+      "categories": {
+        "theme": "成功",
+        "scene": "仕事",
+        "ageGroup": "20代"
+      },
+      "language": "en",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_012",
+      "text": "私は健康な体と心を維持し、毎日を活力に満ちて過ごします",
+      "textEn": "I maintain a healthy body and mind, living each day with vitality",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "健康",
+        "scene": "朝",
+        "ageGroup": "50代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_013",
+      "text": "私は自分のペースで歩み続け、確実に目標に向かっています",
+      "textEn": "I continue walking at my own pace, steadily moving toward my goals",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "成功",
+        "scene": "仕事",
+        "ageGroup": "40代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_014",
+      "text": "今日という日に感謝し、穏やかな気持ちで眠りにつきます",
+      "textEn": "I am grateful for this day and fall asleep with a peaceful mind",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "愛",
+        "scene": "夜",
+        "ageGroup": "60代以上"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_015",
+      "text": "私は内なる平和を保ち、ストレスを手放します",
+      "textEn": "I maintain inner peace and let go of stress",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "健康",
+        "scene": "夜",
+        "ageGroup": "30代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_016",
+      "text": "私は新しい環境に適応し、成長し続けています",
+      "textEn": "I adapt to new environments and continue to grow",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "成功",
+        "scene": "仕事",
+        "ageGroup": "20代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_017",
+      "text": "私の努力は必ず実を結び、望む未来を創り出します",
+      "textEn": "My efforts will surely bear fruit and create the future I desire",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "成功",
+        "scene": "朝",
+        "ageGroup": "30代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_018",
+      "text": "私は家族との時間を大切にし、深いつながりを育んでいます",
+      "textEn": "I cherish time with my family and nurture deep connections",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "愛",
+        "scene": "夜",
+        "ageGroup": "40代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_019",
+      "text": "私は心と体のバランスを保ち、健やかに過ごします",
+      "textEn": "I maintain balance between mind and body, living healthily",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "健康",
+        "scene": "朝",
+        "ageGroup": "40代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_020",
+      "text": "私は今この瞬間に集中し、最高のパフォーマンスを発揮します",
+      "textEn": "I focus on this moment and perform at my best",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "成功",
+        "scene": "仕事",
+        "ageGroup": "30代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_021",
+      "text": "私は自分らしく生きることを選び、他人の期待に縛られません",
+      "textEn": "I choose to live authentically, not bound by others' expectations",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "自信",
+        "scene": "朝",
+        "ageGroup": "20代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_022",
+      "text": "私は失敗を学びの機会として受け入れ、成長し続けます",
+      "textEn": "I accept failure as a learning opportunity and continue to grow",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "成功",
+        "scene": "仕事",
+        "ageGroup": "20代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_023",
+      "text": "私の心は愛と感謝で満たされ、今日も幸せを感じています",
+      "textEn": "My heart is filled with love and gratitude, and I feel happy today",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "愛",
+        "scene": "朝",
+        "ageGroup": "30代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_024",
+      "text": "私は深く呼吸し、体と心をリラックスさせます",
+      "textEn": "I breathe deeply and relax my body and mind",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "健康",
+        "scene": "夜",
+        "ageGroup": "40代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_025",
+      "text": "私は若い世代の良きメンターとなり、知識を分かち合います",
+      "textEn": "I become a good mentor to younger generations and share my knowledge",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "愛",
+        "scene": "仕事",
+        "ageGroup": "50代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_026",
+      "text": "私の人生には意味があり、毎日が価値ある時間です",
+      "textEn": "My life has meaning, and every day is valuable time",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "自信",
+        "scene": "朝",
+        "ageGroup": "60代以上"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_027",
+      "text": "私は困難な状況でも冷静さを保ち、的確な判断を下します",
+      "textEn": "I remain calm in difficult situations and make accurate judgments",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "自信",
+        "scene": "仕事",
+        "ageGroup": "40代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_028",
+      "text": "私は運動を通じて体力を維持し、健康的な生活を送っています",
+      "textEn": "I maintain physical strength through exercise and live a healthy life",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "健康",
+        "scene": "朝",
+        "ageGroup": "30代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_029",
+      "text": "今日の疲れを手放し、明日への活力を蓄えます",
+      "textEn": "I let go of today's fatigue and store energy for tomorrow",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "健康",
+        "scene": "夜",
+        "ageGroup": "20代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_030",
+      "text": "The way to get started is to quit talking and begin doing",
+      "textEn": "The way to get started is to quit talking and begin doing",
+      "author": "ウォルト・ディズニー",
+      "source": null,
+      "categories": {
+        "theme": "成功",
+        "scene": "仕事",
+        "ageGroup": "30代"
+      },
+      "language": "en",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_031",
+      "text": "私は自分の直感を信じ、正しい道を歩んでいます",
+      "textEn": "I trust my intuition and am walking the right path",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "自信",
+        "scene": "朝",
+        "ageGroup": "50代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_032",
+      "text": "私は今日出会う全ての人に親切で、温かい心で接します",
+      "textEn": "I am kind to everyone I meet today and treat them with a warm heart",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "愛",
+        "scene": "朝",
+        "ageGroup": "20代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_033",
+      "text": "私は仕事と家庭のバランスを保ち、充実した人生を送っています",
+      "textEn": "I balance work and home life, living a fulfilling life",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "成功",
+        "scene": "夜",
+        "ageGroup": "40代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_034",
+      "text": "私の体は日々回復し、健康になっています",
+      "textEn": "My body recovers daily and becomes healthier",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "健康",
+        "scene": "夜",
+        "ageGroup": "50代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_035",
+      "text": "私は長年の経験を活かし、周りの人々の支えとなります",
+      "textEn": "I use my years of experience to support those around me",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "愛",
+        "scene": "仕事",
+        "ageGroup": "60代以上"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_036",
+      "text": "私は挑戦することを恐れず、新しい扉を開き続けます",
+      "textEn": "I am not afraid to take on challenges and continue opening new doors",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "成功",
+        "scene": "朝",
+        "ageGroup": "20代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_037",
+      "text": "私は感謝の気持ちを忘れず、今日も多くの恵みを受け取ります",
+      "textEn": "I never forget to be grateful and receive many blessings today",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "愛",
+        "scene": "朝",
+        "ageGroup": "50代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_038",
+      "text": "私は適度な休息を取り、心身の健康を大切にします",
+      "textEn": "I take adequate rest and value the health of my mind and body",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "健康",
+        "scene": "夜",
+        "ageGroup": "30代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_039",
+      "text": "私は今日の成功を素直に喜び、自分を褒めてあげます",
+      "textEn": "I honestly celebrate today's success and praise myself",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "自信",
+        "scene": "夜",
+        "ageGroup": "30代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    },
+    {
+      "id": "aff_040",
+      "text": "私は同僚との協力を通じて、より大きな成果を上げています",
+      "textEn": "Through cooperation with colleagues, I achieve greater results",
+      "author": null,
+      "source": null,
+      "categories": {
+        "theme": "成功",
+        "scene": "仕事",
+        "ageGroup": "40代"
+      },
+      "language": "ja",
+      "createdAt": "2024-09-14T00:00:00Z",
+      "isUserAdded": false
+    }
+  ]
+}
