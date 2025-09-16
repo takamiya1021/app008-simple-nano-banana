@@ -3,141 +3,332 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Image Generator</title>
+    <title>nano-banana - AI画像生成ツール</title>
     <link rel="stylesheet" href="css/style.css">
 
     <!-- PWA設定 -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#667eea">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="nano-banana">
-    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9InVybCgjZ3JhZGllbnQwX2xpbmVhcl8xXzEpIi8+CjxwYXRoIGQ9Ik05NiA2NEMxMDQuODM3IDY0IDExMiA3MS4xNjMgMTEyIDgwVjExMkMxMTIgMTIwLjgzNyAxMDQuODM3IDEyOCA5NiAxMjhIODBDNzEuMTYzIDEyOCA2NCAxMjAuODM3IDY0IDExMlY4MEM2NCA3MS4xNjMgNzEuMTYzIDY0IDgwIDY0SDk2WiIgZmlsbD0id2hpdGUiLz4KPGNpcmNsZSBjeD0iMTQ0IiBjeT0iNDgiIHI9IjE2IiBmaWxsPSJ3aGl0ZSIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDBfbGluZWFyXzFfMSIgeDE9IjAiIHkxPSIwIiB4Mj0iMTkyIiB5Mj0iMTkyIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CjxzdG9wIHN0b3AtY29sb3I9IiM2NjdFRUEiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjNzY0QkEyIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHN2Zz4K">
+
     <!-- セキュリティヘッダー -->
     <meta http-equiv="Content-Security-Policy"
           content="default-src 'self';
-                   script-src 'self' 'unsafe-inline' cdnjs.cloudflare.com;
-                   style-src 'self' 'unsafe-inline' fonts.googleapis.com cdnjs.cloudflare.com;
-                   font-src fonts.gstatic.com cdnjs.cloudflare.com;
+                   script-src 'self';
+                   style-src 'self' 'unsafe-inline';
                    img-src 'self' data:;
                    connect-src 'self' generativelanguage.googleapis.com;">
-    <!-- 暗号化ライブラリ -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js" 
-            integrity="sha512-a+SUDuwNzXDvz4XrIcXHuCf089/iJAoN4lmrXJg18XnduKK6YlDHNRalv4yd1N40OKI80tFidF+rqTFKGPoWFQ==" 
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>AI Image Generator</h1>
-            <p class="subtitle">nano-banana 画像生成ツール</p>
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1>nano-banana</h1>
+            <p class="subtitle">AI画像生成ツール</p>
         </header>
 
-        <main>
-            <!-- API設定セクション -->
-            <section class="section api-config">
+        <main class="main">
+            <!-- APIキー設定セクション -->
+            <section class="section api-section">
                 <h2>API設定</h2>
-                <div class="form-group">
+                <div class="input-group">
                     <label for="api-key">Gemini APIキー:</label>
                     <div class="api-input-container">
-                        <input type="password" id="api-key" placeholder="Gemini APIキーを入力してください">
+                        <input
+                            type="password"
+                            id="api-key"
+                            placeholder="Gemini APIキーを入力してください"
+                            class="input">
                         <div id="api-status" class="api-status hidden">
                             <span class="status-icon">✓</span>
                             <span class="status-text">設定済み</span>
                         </div>
                     </div>
-                    <div class="api-buttons">
-                        <button id="save-config" class="btn btn-primary">保存</button>
-                        <button id="clear-config" class="btn btn-danger">解除</button>
+                    <div class="button-group">
+                        <button id="save-api-key" class="btn btn-primary">保存</button>
+                        <button id="clear-api-key" class="btn btn-danger">削除</button>
                     </div>
                     <p class="security-note">
-                        🔒 <strong>安全保存</strong>: Gemini APIキーはAES暗号化されてあなたのブラウザにのみ保存されます。
-                        当サーバーには送信されません。
+                        🔒 <strong>安全保存</strong>: Gemini APIキーはBase64エンコードされてあなたのブラウザにのみ保存されます。当サーバーには送信されません。
                     </p>
+                    <div class="model-info">
+                        <label>使用モデル:</label>
+                        <div class="model-display">
+                            <strong>Gemini 2.5 Flash Image</strong>
+                            <span class="model-nickname">(nano-banana)</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="model-info">
-                    <label>使用モデル:</label>
-                    <div class="model-display">
-                        <strong>Gemini 2.5 Flash Image</strong>
-                        <span class="model-nickname">(nano-banana)</span>
+            </section>
+
+            <!-- テンプレート選択セクション -->
+            <section class="section template-section">
+                <h2>🎨 生成モード選択</h2>
+                <div class="mode-selection">
+                    <div class="mode-tabs">
+                        <button class="mode-tab active" data-mode="freeform">
+                            <div class="mode-icon">✏️</div>
+                            <div class="mode-title">フリー入力</div>
+                            <div class="mode-desc">自由にプロンプトを記述</div>
+                        </button>
+                        <button class="mode-tab" data-mode="template5">
+                            <div class="mode-icon">🖼️</div>
+                            <div class="mode-title">詳細保持合成</div>
+                            <div class="mode-desc">2つの画像を高品質で合成</div>
+                        </button>
+                        <button class="mode-tab" data-mode="template6">
+                            <div class="mode-icon">📚</div>
+                            <div class="mode-title">コミックパネル</div>
+                            <div class="mode-desc">ストーリーボード風生成</div>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Template 5: 詳細保持合成フォーム -->
+            <section class="section template5-form hidden">
+                <h2>🖼️ 詳細保持合成モード</h2>
+                <div class="template-description">
+                    <p><strong>高忠実度詳細保持：</strong>第1画像の特徴を完全に保持しながら、第2画像の要素を自然に統合します。</p>
+                </div>
+
+                <div class="template-form-grid">
+                    <div class="template-input-group">
+                        <label for="t5-element1">保持する要素 (第1画像から):</label>
+                        <input type="text" id="t5-element1" class="input" placeholder="例：茶色の髪、青い目、ニュートラルな表情の女性">
+                        <small class="input-hint">第1画像の保持したい特徴を詳しく記述</small>
+                    </div>
+
+                    <div class="template-input-group">
+                        <label for="t5-element2">追加する要素 (第2画像から):</label>
+                        <input type="text" id="t5-element2" class="input" placeholder="例：ロゴ、アクセサリー、背景要素">
+                        <small class="input-hint">第2画像から追加したい要素</small>
+                    </div>
+
+                    <div class="template-input-group full-width">
+                        <label for="t5-integration">統合方法の詳細:</label>
+                        <textarea id="t5-integration" class="textarea" rows="3" placeholder="例：ロゴが黒いTシャツに自然にプリントされているように見せ、シャツのしわに沿って配置"></textarea>
+                        <small class="input-hint">要素をどのように統合するかを具体的に記述</small>
+                    </div>
+                </div>
+
+                <div class="template-actions">
+                    <button id="generate-template5" class="btn btn-generate">
+                        詳細保持合成で生成
+                    </button>
+                    <div class="template-preview">
+                        <strong>生成プロンプト:</strong>
+                        <div id="t5-preview" class="prompt-preview">フォームを入力すると、ここにプロンプトが表示されます</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Template 6: コミックパネルフォーム -->
+            <section class="section template6-form hidden">
+                <h2>📚 コミックパネル/ストーリーボードモード</h2>
+                <div class="template-description">
+                    <p><strong>連続アート：</strong>プロ仕様のコミック風パネルやストーリーボードを生成します。</p>
+                </div>
+
+                <div class="template-form-grid">
+                    <div class="template-input-group">
+                        <label for="t6-style">アートスタイル:</label>
+                        <select id="t6-style" class="input">
+                            <option value="gritty, noir art style with high-contrast black and white inks">グリッティ・ノワール（白黒高コントラスト）</option>
+                            <option value="vibrant manga style with detailed line art">鮮やかなマンガスタイル</option>
+                            <option value="watercolor comic style with soft colors">水彩コミック風</option>
+                            <option value="retro superhero comic style">レトロスーパーヒーロー</option>
+                            <option value="minimalist line art style">ミニマリスト線画</option>
+                            <option value="detailed realistic illustration">詳細リアリスティック</option>
+                        </select>
+                    </div>
+
+                    <div class="template-input-group">
+                        <label for="t6-foreground">前景のキャラクター・アクション:</label>
+                        <input type="text" id="t6-foreground" class="input" placeholder="例：トレンチコートを着た探偵が街灯の下に立っている">
+                        <small class="input-hint">メインキャラクターと行動を記述</small>
+                    </div>
+
+                    <div class="template-input-group">
+                        <label for="t6-background">背景の詳細:</label>
+                        <input type="text" id="t6-background" class="input" placeholder="例：荒涼としたバーのネオンサインが水たまりに映る">
+                        <small class="input-hint">背景の環境や設定を記述</small>
+                    </div>
+
+                    <div class="template-input-group">
+                        <label for="t6-text">テキスト・セリフ:</label>
+                        <input type="text" id="t6-text" class="input" placeholder="例：この街は秘密を守るには厳しい場所だった">
+                        <small class="input-hint">キャプションボックスやセリフの内容</small>
+                    </div>
+
+                    <div class="template-input-group">
+                        <label for="t6-mood">ライティング・ムード:</label>
+                        <select id="t6-mood" class="input">
+                            <option value="harsh, dramatic, somber">ハードで劇的、厳粛な</option>
+                            <option value="soft, warm, cheerful">柔らかく暖かい、明るい</option>
+                            <option value="mysterious, shadowy, tense">神秘的で影の多い、緊張感のある</option>
+                            <option value="bright, energetic, dynamic">明るく、エネルギッシュで動的</option>
+                            <option value="romantic, dreamy, gentle">ロマンチックで夢のような、優しい</option>
+                            <option value="apocalyptic, dark, ominous">終末的で暗い、不吉な</option>
+                        </select>
+                    </div>
+
+                    <div class="template-input-group">
+                        <label for="t6-aspect">アスペクト比:</label>
+                        <select id="t6-aspect" class="input">
+                            <option value="Landscape">横長 (Landscape)</option>
+                            <option value="Portrait">縦長 (Portrait)</option>
+                            <option value="Square">正方形 (Square)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="template-actions">
+                    <button id="generate-template6" class="btn btn-generate">
+                        コミックパネルで生成
+                    </button>
+                    <div class="template-preview">
+                        <strong>生成プロンプト:</strong>
+                        <div id="t6-preview" class="prompt-preview">フォームを入力すると、ここにプロンプトが表示されます</div>
                     </div>
                 </div>
             </section>
 
             <!-- プロンプト入力セクション -->
-            <section class="section prompt-input">
+            <section class="section prompt-section">
                 <h2>プロンプト入力</h2>
-                <div class="form-group">
-                    <textarea id="prompt-text" placeholder="生成したい画像の説明を入力してください..."></textarea>
+                <div class="input-group">
+                    <label for="prompt">生成したい画像の説明:</label>
+                    <textarea
+                        id="prompt"
+                        placeholder="例：美しい夕焼けの海岸、波が静かに打ち寄せる風景"
+                        maxlength="5000"
+                        class="textarea"></textarea>
                     <div class="char-counter">
-                        <span id="char-count">0</span>/500
+                        <span id="char-count">0</span>/5000
                     </div>
                 </div>
                 <div class="prompt-history">
-                    <label>履歴:</label>
-                    <select id="prompt-history-select">
+                    <label>履歴から選択:</label>
+                    <select id="prompt-history-select" class="history-select">
                         <option value="">過去のプロンプトを選択</option>
                     </select>
+                    <button id="clear-history" class="btn btn-secondary btn-small">履歴クリア</button>
                 </div>
-            </section>
-
-            <!-- 画像サイズ選択セクション -->
-            <section class="section image-size">
-                <h2>画像サイズ</h2>
-                <div class="form-group">
-                    <label for="image-size-select">アスペクト比:</label>
+                <div class="image-size-selection">
+                    <label>画像サイズ:</label>
                     <select id="image-size-select" class="size-select">
                         <option value="1:1">正方形 (1:1)</option>
-                        <option value="9:16">縦長 (9:16)</option>
                         <option value="16:9">横長 (16:9)</option>
+                        <option value="9:16">縦長 (9:16)</option>
+                        <option value="4:3">横長 (4:3)</option>
+                        <option value="3:4">縦長 (3:4)</option>
                     </select>
                 </div>
-            </section>
-
-            <!-- 参考画像入力セクション -->
-            <section class="section reference-image">
-                <h2>参考画像（最大3枚）</h2>
-                <div class="image-upload-area" id="image-upload">
-                    <div class="upload-placeholder">
-                        <svg class="upload-icon" viewBox="0 0 24 24">
-                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
-                        </svg>
-                        <p>ドラッグ&ドロップまたはクリックして画像を選択</p>
-                        <p class="upload-hint">複数枚選択可能（最大3枚）</p>
+                <div class="sample-prompts">
+                    <label>📝 公式推奨サンプルプロンプト:</label>
+                    <div class="sample-grid">
+                        <button class="sample-btn" data-prompt="A photorealistic close-up portrait of an elderly Japanese ceramicist with deep, sun-etched wrinkles and a warm, knowing smile. He is carefully inspecting a freshly glazed tea bowl in his rustic, sun-drenched workshop filled with natural light streaming through bamboo screens." data-explanation="具体的な人物描写（「深いシワ」「温かい笑顔」）と環境設定（「竹のスクリーン」「自然光」）で臨場感を演出">
+                            🏺 職人のポートレート
+                        </button>
+                        <button class="sample-btn" data-prompt="A stunning aerial view of Mount Fuji at sunrise with cherry blossoms in full bloom in the foreground. The scene features soft pink petals floating in the morning breeze, with golden sunlight casting long shadows across the traditional Japanese landscape. Shot with professional landscape photography techniques." data-explanation="撮影角度（「航空写真」）と時間（「日の出」）、動き（「花びらが舞う」）、撮影技法を明記">
+                            🗻 富士山と桜
+                        </button>
+                        <button class="sample-btn" data-prompt="A minimalist modern kitchen interior featuring clean white marble countertops, warm wood cabinets, and soft natural lighting from a large window. The space should convey elegance and functionality with carefully placed copper cookware and fresh green herbs on the windowsill." data-explanation="素材（「大理石」「温かい木材」）と小物配置（「銅の調理器具」「ハーブ」）で空間の質感を表現">
+                            🏡 モダンキッチン
+                        </button>
+                        <button class="sample-btn" data-prompt="A whimsical illustration of a small nano-banana character wearing a tiny chef's hat, preparing a gourmet meal in a fairy-tale kitchen. The scene should be colorful and charming with magical cooking utensils floating around, rendered in a detailed animation style with soft lighting and vibrant colors." data-explanation="画風（「イラスト」「アニメスタイル」）とムード（「魅力的」「魔法的」）、色彩（「鮮やか」）を指定">
+                            🍌 nano-banana シェフ
+                        </button>
+                        <button class="sample-btn" data-prompt="A professional product photography shot of a luxury wristwatch on a dark marble surface with dramatic side lighting creating subtle reflections. The watch face should be clearly visible with precise details of the mechanism visible through a transparent case back. High-end commercial photography style." data-explanation="撮影用途（「商品写真」）、ライティング（「ドラマチック」「サイド照明」）、見せたいディテールを明記">
+                            ⌚ 商品撮影
+                        </button>
+                        <button class="sample-btn" data-prompt="A vibrant street art mural depicting a futuristic cityscape with neon colors and cyberpunk elements. The artwork should feature bold geometric patterns, glowing lights, and a sense of movement and energy. Painted on a brick wall with spray paint techniques and stencil details." data-explanation="色彩（「ネオン」「鮮やか」）、ジャンル（「サイバーパンク」）、技法（「スプレー」「ステンシル」）で表現方法を限定">
+                            🎨 ストリートアート
+                        </button>
                     </div>
-                    <input type="file" id="file-input" accept="image/*" multiple hidden>
-                </div>
-                <div id="images-preview" class="images-preview">
-                    <!-- 画像プレビューが動的に追加される -->
+                    <div class="sample-explanation-display">
+                        <div id="sample-explanation-content">
+                            <strong>💡 ポイント:</strong> ボタンにマウスを乗せると、効果的なプロンプトの書き方のコツが表示されます
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <!-- 制御ボタン -->
-            <section class="section controls">
-                <button id="generate-btn" class="btn btn-generate">生成開始</button>
-                <button id="reset-btn" class="btn btn-secondary">設定リセット</button>
+            <!-- 参考画像アップロード -->
+            <section class="section reference-image-section">
+                <h2>参考画像（オプション - 最大2枚）</h2>
+
+                <!-- 入力画像1 -->
+                <div class="input-group">
+                    <label for="reference-image-1">入力画像1:</label>
+                    <div class="image-upload-area" id="image-upload-area-1">
+                        <input type="file" id="reference-image-1" accept="image/*" class="file-input">
+                        <div class="upload-placeholder">
+                            <p>📷 画像1をドラッグ&ドロップまたはクリックして選択</p>
+                            <p class="upload-note">JPEG, PNG, GIF対応</p>
+                        </div>
+                        <div id="image-preview-1" class="image-preview hidden">
+                            <img id="preview-img-1" alt="参考画像1プレビュー">
+                            <button id="remove-image-1" class="btn btn-secondary btn-small">画像1を削除</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 入力画像2 -->
+                <div class="input-group">
+                    <label for="reference-image-2">入力画像2:</label>
+                    <div class="image-upload-area" id="image-upload-area-2">
+                        <input type="file" id="reference-image-2" accept="image/*" class="file-input">
+                        <div class="upload-placeholder">
+                            <p>📷 画像2をドラッグ&ドロップまたはクリックして選択</p>
+                            <p class="upload-note">JPEG, PNG, GIF対応</p>
+                        </div>
+                        <div id="image-preview-2" class="image-preview hidden">
+                            <img id="preview-img-2" alt="参考画像2プレビュー">
+                            <button id="remove-image-2" class="btn btn-secondary btn-small">画像2を削除</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 生成ボタン -->
+            <section class="section control-section">
+                <button id="generate-btn" class="btn btn-generate" disabled>
+                    画像を生成
+                </button>
             </section>
 
             <!-- 結果表示セクション -->
-            <section class="section result">
-                <h2>結果</h2>
+            <section class="section result-section">
+                <h2>生成結果</h2>
                 <div id="result-area" class="result-area">
                     <div class="result-placeholder">
                         <p>生成された画像がここに表示されます</p>
                     </div>
                 </div>
                 <div id="result-controls" class="result-controls hidden">
-                    <button id="download-btn" class="btn btn-primary">ダウンロード</button>
-                    <button id="regenerate-btn" class="btn btn-secondary">再生成</button>
+                    <div class="button-group">
+                        <button id="download-btn" class="btn btn-primary">ダウンロード</button>
+                        <button id="regenerate-btn" class="btn btn-secondary">再生成</button>
+                    </div>
                 </div>
             </section>
-
-            <!-- ローディング表示 -->
-            <div id="loading" class="loading hidden">
-                <div class="spinner"></div>
-                <p>画像を生成中...</p>
-            </div>
         </main>
+
+        <!-- ローディング表示 -->
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>画像を生成しています...</p>
+        </div>
+
+        <!-- エラー表示 -->
+        <div id="error-message" class="error-message hidden">
+            <div class="error-content">
+                <h3>エラーが発生しました</h3>
+                <p id="error-text"></p>
+                <button id="close-error" class="btn btn-secondary">閉じる</button>
+            </div>
+        </div>
     </div>
 
     <script src="js/app.js"></script>
