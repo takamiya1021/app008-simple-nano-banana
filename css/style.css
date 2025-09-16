@@ -283,6 +283,107 @@ body {
     box-shadow: 0 1px 4px rgba(102, 126, 234, 0.3);
 }
 
+/* モバイル対応強化 */
+@media (hover: none) and (pointer: coarse) {
+    .sample-btn {
+        /* モバイルでのタップ領域を拡大 */
+        min-height: 48px;
+        padding: 16px 20px;
+        /* タップ時の視覚的フィードバック強化 */
+        transition: all 0.2s ease;
+    }
+
+    .sample-btn:active {
+        background: rgba(102, 126, 234, 0.1);
+        border-color: #667eea;
+        transform: scale(0.98);
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+    }
+
+    /* hover効果をtouch時に代替 */
+    .sample-btn:focus {
+        border-color: #667eea;
+        background: rgba(102, 126, 234, 0.05);
+        outline: none;
+    }
+
+    /* 画像アップロードをモバイル用に簡潔化 */
+    .upload-primary-text {
+        font-size: 16px !important;
+        margin-bottom: 4px !important;
+        font-weight: 500;
+    }
+
+    .upload-primary-text::before {
+        content: "📷 ";
+        font-size: 20px;
+        margin-right: 4px;
+    }
+
+    .upload-note {
+        font-size: 12px !important;
+        opacity: 0.7;
+        margin-bottom: 0 !important;
+    }
+
+    /* 画像生成ボタンをモバイル用に強化 */
+    .btn-generate {
+        padding: 20px 24px !important;
+        font-size: 20px !important;
+        font-weight: 700 !important;
+        min-height: 60px;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+    }
+
+    .btn-generate:active {
+        transform: scale(0.98);
+        box-shadow: 0 2px 8px rgba(72, 187, 120, 0.4);
+    }
+
+    /* 生成モード選択をモバイル用に強化 */
+    .mode-tabs {
+        gap: 12px !important;
+    }
+
+    .mode-tab {
+        padding: 16px 20px !important;
+        border-radius: 12px !important;
+        min-height: 80px;
+        background: white;
+        border: 2px solid #e2e8f0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
+    }
+
+    .mode-tab:active {
+        transform: scale(0.97);
+    }
+
+    .mode-tab.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-color: #667eea;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .mode-icon {
+        font-size: 24px !important;
+        margin-bottom: 4px;
+    }
+
+    .mode-title {
+        font-size: 16px !important;
+        font-weight: 600;
+        margin-bottom: 2px;
+    }
+
+    .mode-desc {
+        font-size: 13px !important;
+        opacity: 0.8;
+    }
+}
+
 /* 画像アップロード */
 .image-upload-area {
     position: relative;
@@ -292,6 +393,10 @@ body {
     text-align: center;
     transition: border-color 0.3s ease, background-color 0.3s ease;
     cursor: pointer;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .image-upload-area:hover {

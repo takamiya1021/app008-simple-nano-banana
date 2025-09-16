@@ -13,6 +13,7 @@ class NanoBananaApp {
         this.referenceImages = [null, null]; // 最大2枚の参考画像
         this.lastPrompt = '';
         this.currentMode = 'freeform'; // 現在の生成モード
+        this.explanationTimeout = null; // サンプル説明表示用タイマー
 
         // 設定
         this.config = {
@@ -125,9 +126,11 @@ class NanoBananaApp {
 
         // サンプルプロンプト
         document.querySelectorAll('.sample-btn').forEach(btn => {
-            btn.addEventListener('click', () => this.selectSamplePrompt(btn.dataset.prompt));
-            btn.addEventListener('mouseenter', () => this.showSampleExplanation(btn.dataset.explanation));
-            btn.addEventListener('mouseleave', () => this.hideSampleExplanation());
+            // クリック・タップイベント（プロンプト選択＋説明表示）
+            btn.addEventListener('click', () => {
+                this.selectSamplePrompt(btn.dataset.prompt);
+                this.showSampleExplanation(btn.dataset.explanation);
+            });
         });
 
         // 参考画像アップロード（画像1）
@@ -670,6 +673,12 @@ class NanoBananaApp {
         const content = document.getElementById('sample-explanation-content');
         if (content && explanation) {
             content.innerHTML = `<strong>💡 ポイント:</strong> ${explanation}`;
+
+            // 4秒後に自動で元に戻す
+            clearTimeout(this.explanationTimeout);
+            this.explanationTimeout = setTimeout(() => {
+                this.hideSampleExplanation();
+            }, 4000);
         }
     }
 
@@ -679,7 +688,7 @@ class NanoBananaApp {
     hideSampleExplanation() {
         const content = document.getElementById('sample-explanation-content');
         if (content) {
-            content.innerHTML = '<strong>💡 ポイント:</strong> ボタンにマウスを乗せると、効果的なプロンプトの書き方のコツが表示されます';
+            content.innerHTML = '<strong>💡 ポイント:</strong> サンプルプロンプトをクリックすると、効果的な書き方のコツが表示されます';
         }
     }
 

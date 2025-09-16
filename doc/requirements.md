@@ -79,7 +79,11 @@ Gemini 2.5 Flash Image API を使用して、テキストプロンプトから�
 ### フロントエンド
 - HTML5、CSS3、Vanilla JavaScript
 - レスポンシブデザイン
-- PWA対応（manifest.json）
+- PWA対応（manifest.json + Service Worker）
+  - オフライン機能
+  - アプリインストール
+  - キャッシュ戦略
+  - プッシュ通知対応（将来拡張）
 
 ### API連携
 - Gemini 2.5 Flash Image API
@@ -155,9 +159,11 @@ Gemini 2.5 Flash Image API を使用して、テキストプロンプトから�
 - 実装計画書作成 ✓
 - MVP実装・テスト ✓
 - プロンプト履歴機能実装 ✓
-- 画像サイズ選択機能実装
-- 参考画像アップロード機能実装
-- 再生成機能実装
+- 画像サイズ選択機能実装 ✓
+- 参考画像アップロード機能実装 ✓
+- 再生成機能実装 ✓
+- PWA対応（Service Worker）実装 ✓
+- テンプレート機能（Template 5, 6）実装 ✓
 
 ### Phase 2（将来）
 - UI/UX改善

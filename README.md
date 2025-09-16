@@ -1,5 +1,11 @@
 # nano-banana
 
+<div align="center">
+
+![nano-banana AI画像生成ツール](png/app-screenshot.png)
+
+</div>
+
 シンプルで確実に動作するAI画像生成ツール。Gemini 2.5 Flash Image APIを使用してテキストプロンプトから高品質な画像を生成します。
 
 ## 🚀 主要機能
@@ -152,6 +158,9 @@ npx serve .
 ├── js/
 │   └── app.js         # メインJavaScriptファイル
 ├── manifest.json      # PWA設定
+├── sw.js              # Service Worker（PWAキャッシュ機能）
+├── png/               # 画像・スクリーンショット
+│   └── app-screenshot.png
 ├── doc/               # ドキュメント
 │   ├── requirements.md
 │   ├── technical-specs.md
@@ -177,7 +186,7 @@ npx serve .
 
 #### 2. 「画像生成に失敗しました」エラー
 - インターネット接続を確認
-- プロンプトが500文字以内か確認
+- プロンプトが5000文字以内か確認
 - しばらく時間をおいて再試行
 
 #### 3. 画像が表示されない

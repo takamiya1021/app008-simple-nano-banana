@@ -12,6 +12,11 @@
 - HTML5 + CSS3 + Vanilla JavaScript
 - Gemini 2.5 Flash Image API
 - Progressive Web App (PWA)
+  - Web App Manifest
+  - Service Worker
+  - キャッシュ戦略
+  - オフライン対応
+  - アプリインストール機能
 
 ## APIエンドポイント仕様
 
@@ -64,6 +69,9 @@
 ├── js/
 │   └── app.js         # メインJavaScriptファイル
 ├── manifest.json      # PWA設定
+├── sw.js              # Service Worker（PWAキャッシュ機能）
+├── png/               # 画像・スクリーンショット
+│   └── app-screenshot.png
 ├── doc/               # ドキュメント
 │   ├── requirements.md
 │   ├── technical-specs.md
@@ -92,6 +100,43 @@
   }
 }
 ```
+
+## PWA仕様
+
+### Service Worker実装
+**ファイル**: `sw.js`
+**バージョン**: `nano-banana-v1.0.0`
+
+### キャッシュ戦略
+- **静的アセットキャッシュ**: Cache First戦略
+  - HTML, CSS, JavaScript, manifest.json
+  - キャッシュ名: `nano-banana-static-v1.0.0`
+- **APIリクエスト**: Network Only戦略
+  - Gemini API呼び出しは常にリアルタイム実行
+  - キャッシュ対象外: `generativelanguage.googleapis.com`
+
+### オフライン対応
+- **静的ファイル**: キャッシュから提供
+- **フォールバック**: ネットワークエラー時にindex.htmlを提供
+- **API機能**: オンライン時のみ利用可能
+
+### Web App Manifest
+**ファイル**: `manifest.json`
+```json
+{
+  "name": "nano-banana AI画像生成",
+  "short_name": "nano-banana",
+  "display": "standalone",
+  "start_url": "/",
+  "theme_color": "#667eea",
+  "background_color": "#667eea"
+}
+```
+
+### インストール機能
+- **ブラウザ**: Chrome, Edge, Firefox, Safari対応
+- **モバイル**: iOS Safari, Android Chrome対応
+- **アイコン**: SVG形式、192x192および512x512サイズ
 
 ## コンポーネント設計
 
