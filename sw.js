@@ -1,11 +1,11 @@
 /**
- * nano-banana Service Worker
+ * simple-nano-banana Service Worker
  * PWA対応のためのキャッシュ戦略とオフライン対応
  */
 
-const CACHE_NAME = 'nano-banana-v1.1.0';
-const STATIC_CACHE_NAME = 'nano-banana-static-v1.1.0';
-const API_CACHE_NAME = 'nano-banana-api-v1.1.0';
+const CACHE_NAME = 'simple-nano-banana-v1.2.0';
+const STATIC_CACHE_NAME = 'simple-nano-banana-static-v1.2.0';
+const API_CACHE_NAME = 'simple-nano-banana-api-v1.2.0';
 
 // キャッシュするファイル一覧
 const STATIC_ASSETS = [

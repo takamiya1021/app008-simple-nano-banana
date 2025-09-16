@@ -1,0 +1,41 @@
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="192" height="192" rx="24" fill="url(#gradient0_linear_1_1)"/>
+
+  <!-- メイン画像フレーム -->
+  <rect x="48" y="64" width="96" height="64" rx="8" fill="white" stroke="url(#frameGradient)" stroke-width="2"/>
+
+  <!-- バナナ形状（AIアートのモチーフ） -->
+  <path d="M80 80C76 76 84 72 88 76C92 80 96 84 92 88C88 92 80 84 80 80Z" fill="url(#bananaGradient)"/>
+  <path d="M104 96C100 92 108 88 112 92C116 96 120 100 116 104C112 108 104 100 104 96Z" fill="url(#bananaGradient)" opacity="0.8"/>
+
+  <!-- AI回路パターン -->
+  <circle cx="72" cy="104" r="3" fill="#FFF700" opacity="0.7"/>
+  <circle cx="120" cy="88" r="2" fill="#FFF700" opacity="0.7"/>
+  <line x1="72" y1="104" x2="88" y2="88" stroke="#FFF700" stroke-width="1" opacity="0.5"/>
+  <line x1="104" y1="100" x2="120" y2="88" stroke="#FFF700" stroke-width="1" opacity="0.5"/>
+
+  <!-- 魔法のスパークル -->
+  <g fill="white" opacity="0.9">
+    <path d="M136 48L138 54L144 56L138 58L136 64L134 58L128 56L134 54Z"/>
+    <path d="M60 40L61 44L65 45L61 46L60 50L59 46L55 45L59 44Z"/>
+    <path d="M156 144L157 147L160 148L157 149L156 152L155 149L152 148L155 147Z"/>
+  </g>
+
+  <!-- グラデーション定義 -->
+  <defs>
+    <linearGradient id="gradient0_linear_1_1" x1="0" y1="0" x2="192" y2="192" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#667EEA"/>
+      <stop offset="0.5" stop-color="#764BA2"/>
+      <stop offset="1" stop-color="#F093FB"/>
+    </linearGradient>
+    <linearGradient id="frameGradient" x1="48" y1="64" x2="144" y2="128" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFE066"/>
+      <stop offset="1" stop-color="#FF6B9D"/>
+    </linearGradient>
+    <linearGradient id="bananaGradient" x1="80" y1="76" x2="120" y2="108" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFE066"/>
+      <stop offset="1" stop-color="#FFBE0B"/>
+    </linearGradient>
+  </defs>
+</svg>

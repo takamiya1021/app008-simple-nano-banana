@@ -43,6 +43,7 @@ class NanoBananaApp {
         this.elements = {
             // APIキー関連
             apiKeyInput: document.getElementById('api-key'),
+            apiInputContainer: document.querySelector('.api-input-container'),
             pasteApiKeyBtn: document.getElementById('paste-api-key'),
             saveApiKeyBtn: document.getElementById('save-api-key'),
             deleteApiKeyBtn: document.getElementById('clear-api-key'),
@@ -326,11 +327,13 @@ class NanoBananaApp {
         if (this.apiKey) {
             // APIキー設定済み
             this.elements.apiStatus.classList.remove('hidden');
+            this.elements.apiInputContainer.classList.add('api-configured');
             this.elements.saveApiKeyBtn.disabled = true;
             this.elements.deleteApiKeyBtn.disabled = false;
         } else {
             // APIキー未設定
             this.elements.apiStatus.classList.add('hidden');
+            this.elements.apiInputContainer.classList.remove('api-configured');
             this.elements.saveApiKeyBtn.disabled = false;
             this.elements.deleteApiKeyBtn.disabled = true;
         }

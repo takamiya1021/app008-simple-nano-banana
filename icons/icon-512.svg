@@ -1,0 +1,49 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="512" height="512" rx="64" fill="url(#gradient0_linear_1_1)"/>
+
+  <!-- メイン画像フレーム -->
+  <rect x="128" y="171" width="256" height="171" rx="21" fill="white" stroke="url(#frameGradient)" stroke-width="5"/>
+
+  <!-- バナナ形状（AIアートのモチーフ） -->
+  <path d="M213 213C203 203 224 192 235 203C245 213 256 224 245 235C235 245 213 224 213 213Z" fill="url(#bananaGradient)"/>
+  <path d="M277 256C267 245 288 235 299 245C309 256 320 267 309 277C299 288 277 267 277 256Z" fill="url(#bananaGradient)" opacity="0.8"/>
+
+  <!-- AI回路パターン -->
+  <circle cx="192" cy="277" r="8" fill="#FFF700" opacity="0.7"/>
+  <circle cx="320" cy="235" r="5" fill="#FFF700" opacity="0.7"/>
+  <line x1="192" y1="277" x2="235" y2="235" stroke="#FFF700" stroke-width="3" opacity="0.5"/>
+  <line x1="277" y1="267" x2="320" y2="235" stroke="#FFF700" stroke-width="3" opacity="0.5"/>
+
+  <!-- 魔法のスパークル -->
+  <g fill="white" opacity="0.9">
+    <path d="M363 128L368 144L384 149L368 155L363 171L357 155L341 149L357 144Z"/>
+    <path d="M160 107L165 117L175 120L165 123L160 133L155 123L145 120L155 117Z"/>
+    <path d="M416 384L421 397L435 403L421 408L416 421L411 408L397 403L411 397Z"/>
+  </g>
+
+  <!-- 小さなスパークル -->
+  <g fill="white" opacity="0.6">
+    <circle cx="448" cy="96" r="3"/>
+    <circle cx="96" cy="416" r="2"/>
+    <circle cx="416" cy="96" r="2"/>
+    <circle cx="64" cy="384" r="3"/>
+  </g>
+
+  <!-- グラデーション定義 -->
+  <defs>
+    <linearGradient id="gradient0_linear_1_1" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#667EEA"/>
+      <stop offset="0.5" stop-color="#764BA2"/>
+      <stop offset="1" stop-color="#F093FB"/>
+    </linearGradient>
+    <linearGradient id="frameGradient" x1="128" y1="171" x2="384" y2="342" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFE066"/>
+      <stop offset="1" stop-color="#FF6B9D"/>
+    </linearGradient>
+    <linearGradient id="bananaGradient" x1="213" y1="203" x2="320" y2="288" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFE066"/>
+      <stop offset="1" stop-color="#FFBE0B"/>
+    </linearGradient>
+  </defs>
+</svg>

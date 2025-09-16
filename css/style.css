@@ -584,6 +584,14 @@ body {
 .btn-paste:active {
     transform: scale(0.95);
 }
+/* APIキー設定済み時はペーストボタンを非表示にして競合を回避 */
+.api-input-container.api-configured .btn-paste {
+    display: none;
+}
+/* API設定済み時の入力フィールドパディング調整 */
+.api-input-container.api-configured .input {
+    padding-right: 120px !important;
+}
 
 /* 通知メッセージのスタイル */
 .notification {
