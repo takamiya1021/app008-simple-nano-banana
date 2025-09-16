@@ -33,11 +33,16 @@
                 <div class="input-group">
                     <label for="api-key">Gemini APIキー:</label>
                     <div class="api-input-container">
-                        <input
-                            type="password"
-                            id="api-key"
-                            placeholder="Gemini APIキーを入力してください"
-                            class="input">
+                        <div class="input-with-paste">
+                            <input
+                                type="password"
+                                id="api-key"
+                                placeholder="Gemini APIキーを入力してください"
+                                class="input">
+                            <button id="paste-api-key" class="btn-paste" title="クリップボードから貼り付け">
+                                📋
+                            </button>
+                        </div>
                         <div id="api-status" class="api-status hidden">
                             <span class="status-icon">✓</span>
                             <span class="status-text">設定済み</span>

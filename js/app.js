@@ -43,6 +43,7 @@ class NanoBananaApp {
         this.elements = {
             // APIキー関連
             apiKeyInput: document.getElementById('api-key'),
+            pasteApiKeyBtn: document.getElementById('paste-api-key'),
             saveApiKeyBtn: document.getElementById('save-api-key'),
             deleteApiKeyBtn: document.getElementById('clear-api-key'),
             apiStatus: document.getElementById('api-status'),
@@ -111,6 +112,7 @@ class NanoBananaApp {
      */
     bindEvents() {
         // APIキー管理
+        this.elements.pasteApiKeyBtn.addEventListener('click', () => this.pasteApiKey());
         this.elements.saveApiKeyBtn.addEventListener('click', () => this.saveApiKey());
         this.elements.deleteApiKeyBtn.addEventListener('click', () => this.deleteApiKey());
 
@@ -183,6 +185,56 @@ class NanoBananaApp {
             this.elements.t6Mood.addEventListener('change', () => this.updateTemplate6Preview());
             this.elements.t6Aspect.addEventListener('change', () => this.updateTemplate6Preview());
             this.elements.generateTemplate6Btn.addEventListener('click', () => this.generateTemplate6());
+        }
+    }
+
+    /**
+     * クリップボードからAPIキーをペースト
+     */
+    async pasteApiKey() {
+        try {
+            // Clipboard APIを使用してテキストを読み取り
+            const text = await navigator.clipboard.readText();
+
+            if (text) {
+                this.elements.apiKeyInput.value = text.trim();
+                this.showNotification('📋 APIキーが貼り付けられました', 'success');
+
+                // 貼り付け後に保存ボタンを強調表示
+                this.elements.saveApiKeyBtn.focus();
+            } else {
+                this.showNotification('クリップボードが空です', 'error');
+            }
+        } catch (error) {
+            console.error('Paste error:', error);
+
+            // Clipboard APIが使用できない場合のフォールバック
+            this.showNotification('📋 手動でAPIキーを入力してください\n（長押しで貼り付けメニューが表示される場合があります）', 'info');
+
+            // 入力フィールドにフォーカスしてユーザーの操作を促す
+            this.elements.apiKeyInput.focus();
+        }
+    }
+
+    /**
+     * 通知メッセージを表示
+     */
+    showNotification(message, type = 'info') {
+        // 既存のエラー表示機能を拡張
+        const errorElement = this.elements.errorMessage;
+        const textElement = this.elements.errorText;
+
+        if (errorElement && textElement) {
+            textElement.textContent = message;
+
+            // タイプに応じて色を変更
+            errorElement.className = `notification notification-${type}`;
+            errorElement.classList.remove('hidden');
+
+            // 3秒後に自動で非表示
+            setTimeout(() => {
+                errorElement.classList.add('hidden');
+            }, 3000);
         }
     }
 
