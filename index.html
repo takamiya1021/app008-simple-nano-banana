@@ -13,7 +13,7 @@
     <!-- セキュリティヘッダー -->
     <meta http-equiv="Content-Security-Policy"
           content="default-src 'self';
-                   script-src 'self';
+                   script-src 'self' 'unsafe-inline';
                    style-src 'self' 'unsafe-inline';
                    img-src 'self' data:;
                    connect-src 'self' generativelanguage.googleapis.com;">
@@ -53,14 +53,17 @@
                         <button id="clear-api-key" class="btn btn-danger">削除</button>
                     </div>
                     <p class="security-note">
-                        🔒 <strong>安全保存</strong>: Gemini APIキーはBase64エンコードされてあなたのブラウザにのみ保存されます。当サーバーには送信されません。
+                        🔒 Gemini APIキーは暗号化されてあなたのブラウザにのみ保存されます。当サーバーには送信されません。
                     </p>
                     <div class="model-info">
                         <label>使用モデル:</label>
                         <div class="model-display">
-                            <strong>Gemini 2.5 Flash Image</strong>
+                            <strong>Gemini 2.5 Flash Image Preview</strong>
                             <span class="model-nickname">(nano-banana)</span>
                         </div>
+                        <p class="model-note">
+                            有料のGemini APIキーを使ってください。（1枚あたり約0.039円の課金が発生します）
+                        </p>
                     </div>
                 </div>
             </section>
@@ -117,6 +120,13 @@
                 </div>
 
                 <div class="template-actions">
+                    <div class="auto-translate-toggle">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="t5-auto-translate">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <label for="t5-auto-translate">自動翻訳</label>
+                    </div>
                     <button id="generate-template5" class="btn btn-generate">
                         詳細保持合成で生成
                     </button>
@@ -144,6 +154,11 @@
                             <option value="retro superhero comic style">レトロスーパーヒーロー</option>
                             <option value="minimalist line art style">ミニマリスト線画</option>
                             <option value="detailed realistic illustration">詳細リアリスティック</option>
+                            <option value="Studio Ghibli style with soft watercolor textures and whimsical character designs">ジブリ風（水彩風テクスチャ）</option>
+                            <option value="Dragon Ball style with dynamic action poses and bold angular character designs">ドラゴンボール風（ダイナミックアクション）</option>
+                            <option value="One Piece style with exaggerated proportions and vibrant adventure themes">ワンピース風（誇張された比率）</option>
+                            <option value="Attack on Titan style with dark, intense linework and dramatic shading">進撃の巨人風（ダーク＆インテンス）</option>
+                            <option value="Demon Slayer style with beautiful color gradients and flowing artistic elements">鬼滅の刃風（美しい色彩グラデーション）</option>
                         </select>
                     </div>
 
@@ -174,6 +189,11 @@
                             <option value="bright, energetic, dynamic">明るく、エネルギッシュで動的</option>
                             <option value="romantic, dreamy, gentle">ロマンチックで夢のような、優しい</option>
                             <option value="apocalyptic, dark, ominous">終末的で暗い、不吉な</option>
+                            <option value="nostalgic, golden hour, melancholic">ノスタルジックな夕焼け、憂愁</option>
+                            <option value="epic, heroic, glorious">壮大で英雄的、栄光の</option>
+                            <option value="comedic, playful, lighthearted">コメディック、遊び心のある、軽快な</option>
+                            <option value="surreal, ethereal, otherworldly">超現実的、幻想的、異世界的</option>
+                            <option value="intense, action-packed, adrenaline-fueled">激しい、アクション満載、アドレナリン全開</option>
                         </select>
                     </div>
 
@@ -188,6 +208,13 @@
                 </div>
 
                 <div class="template-actions">
+                    <div class="auto-translate-toggle">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="t6-auto-translate">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <label for="t6-auto-translate">自動翻訳</label>
+                    </div>
                     <button id="generate-template6" class="btn btn-generate">
                         コミックパネルで生成
                     </button>
@@ -225,8 +252,6 @@
                         <option value="1:1">正方形 (1:1)</option>
                         <option value="16:9">横長 (16:9)</option>
                         <option value="9:16">縦長 (9:16)</option>
-                        <option value="4:3">横長 (4:3)</option>
-                        <option value="3:4">縦長 (3:4)</option>
                     </select>
                 </div>
                 <div class="sample-prompts">
@@ -273,8 +298,37 @@
                             <p class="upload-note">JPEG, PNG, GIF対応</p>
                         </div>
                         <div id="image-preview-1" class="image-preview hidden">
-                            <img id="preview-img-1" alt="参考画像1プレビュー">
-                            <button id="remove-image-1" class="btn btn-secondary btn-small">画像1を削除</button>
+                            <div class="image-canvas-container">
+                                <img id="preview-img-1" alt="参考画像1プレビュー">
+                                <canvas id="drawing-canvas-1" class="drawing-canvas hidden"></canvas>
+                            </div>
+                            <div class="image-controls">
+                                <button id="toggle-drawing-1" class="btn btn-secondary btn-small">🎨 描画モード</button>
+                                <button id="remove-image-1" class="btn btn-secondary btn-small">画像1を削除</button>
+                            </div>
+                            <!-- 描画ツールパレット -->
+                            <div id="drawing-tools-1" class="drawing-tools hidden">
+                                <div class="tool-group">
+                                    <label>ツール:</label>
+                                    <button class="tool-btn active" data-tool="pen" title="ペン">✏️</button>
+                                    <button class="tool-btn" data-tool="line" title="直線">📏</button>
+                                    <button class="tool-btn" data-tool="rect" title="矩形">⬜</button>
+                                    <button class="tool-btn" data-tool="circle" title="円">⭕</button>
+                                    <button class="tool-btn" data-tool="eraser" title="消しゴム">🧽</button>
+                                </div>
+                                <div class="tool-group">
+                                    <label>色:</label>
+                                    <button class="color-btn color-red active" data-color="#ff0000" title="赤"></button>
+                                    <button class="color-btn color-blue" data-color="#0000ff" title="青"></button>
+                                    <button class="color-btn color-green" data-color="#00ff00" title="緑"></button>
+                                    <button class="color-btn color-yellow" data-color="#ffff00" title="黄"></button>
+                                    <button class="color-btn color-black" data-color="#000000" title="黒"></button>
+                                </div>
+                                <div class="tool-group">
+                                    <button id="clear-drawing-1" class="btn btn-secondary btn-small">🗑️ 消去</button>
+                                    <button id="drawing-done-1" class="btn btn-primary btn-small">✓ 完了</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -289,8 +343,37 @@
                             <p class="upload-note">JPEG, PNG, GIF対応</p>
                         </div>
                         <div id="image-preview-2" class="image-preview hidden">
-                            <img id="preview-img-2" alt="参考画像2プレビュー">
-                            <button id="remove-image-2" class="btn btn-secondary btn-small">画像2を削除</button>
+                            <div class="image-canvas-container">
+                                <img id="preview-img-2" alt="参考画像2プレビュー">
+                                <canvas id="drawing-canvas-2" class="drawing-canvas hidden"></canvas>
+                            </div>
+                            <div class="image-controls">
+                                <button id="toggle-drawing-2" class="btn btn-secondary btn-small">🎨 描画モード</button>
+                                <button id="remove-image-2" class="btn btn-secondary btn-small">画像2を削除</button>
+                            </div>
+                            <!-- 描画ツールパレット -->
+                            <div id="drawing-tools-2" class="drawing-tools hidden">
+                                <div class="tool-group">
+                                    <label>ツール:</label>
+                                    <button class="tool-btn active" data-tool="pen" title="ペン">✏️</button>
+                                    <button class="tool-btn" data-tool="line" title="直線">📏</button>
+                                    <button class="tool-btn" data-tool="rect" title="矩形">⬜</button>
+                                    <button class="tool-btn" data-tool="circle" title="円">⭕</button>
+                                    <button class="tool-btn" data-tool="eraser" title="消しゴム">🧽</button>
+                                </div>
+                                <div class="tool-group">
+                                    <label>色:</label>
+                                    <button class="color-btn color-red active" data-color="#ff0000" title="赤"></button>
+                                    <button class="color-btn color-blue" data-color="#0000ff" title="青"></button>
+                                    <button class="color-btn color-green" data-color="#00ff00" title="緑"></button>
+                                    <button class="color-btn color-yellow" data-color="#ffff00" title="黄"></button>
+                                    <button class="color-btn color-black" data-color="#000000" title="黒"></button>
+                                </div>
+                                <div class="tool-group">
+                                    <button id="clear-drawing-2" class="btn btn-secondary btn-small">🗑️ 消去</button>
+                                    <button id="drawing-done-2" class="btn btn-primary btn-small">✓ 完了</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -336,20 +419,9 @@
         </div>
     </div>
 
-    <script>
-        // Service Worker登録（PWA対応）
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then((registration) => {
-                        console.log('Service Worker registered successfully:', registration);
-                    })
-                    .catch((error) => {
-                        console.error('Service Worker registration failed:', error);
-                    });
-            });
-        }
-    </script>
+    <!-- JavaScript（外部ファイルのみ、CSP準拠） -->
+    <script src="js/sw-register.js"></script>
+    <script src="js/drawing.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

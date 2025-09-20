@@ -13,10 +13,9 @@
 - Gemini 2.5 Flash Image API
 - Progressive Web App (PWA)
   - Web App Manifest
-  - Service Worker
-  - キャッシュ戦略
-  - オフライン対応
   - アプリインストール機能
+  - レスポンシブデザイン
+  - HTTPS配信
 
 ## APIエンドポイント仕様
 
@@ -67,9 +66,11 @@
 ├── css/
 │   └── style.css      # スタイルシート
 ├── js/
-│   └── app.js         # メインJavaScriptファイル
+│   ├── app.js         # メインJavaScriptファイル
+│   ├── drawing.js     # 描画機能（Canvas描画・アスペクト比指定）
+│   └── sw-register.js # Service Worker登録（現在無効化）
 ├── manifest.json      # PWA設定
-├── sw.js              # Service Worker（PWAキャッシュ機能）
+├── sw.js              # Service Worker（現在使用停止）
 ├── png/               # 画像・スクリーンショット
 │   └── app-screenshot.png
 ├── doc/               # ドキュメント
@@ -103,22 +104,52 @@
 
 ## PWA仕様
 
-### Service Worker実装
-**ファイル**: `sw.js`
-**バージョン**: `nano-banana-v1.0.0`
+### ⚠️ Service Worker の扱い（重要）
 
-### キャッシュ戦略
+**現在の方針: Service Worker は無効化**
+
+**理由**:
+- **画像生成はオンライン必須**: オフライン対応の意味がない
+- **API干渉のリスク**: fetchイベントがAPIリクエストを妨害する可能性
+- **開発・デバッグの複雑化**: Service Worker由来のトラブルが発生しやすい
+- **PWA必須要件ではない**: manifest.jsonのみでPWA認定・インストール可能
+
+**実装状況**:
+```javascript
+// sw-register.js で無効化
+if ('serviceWorker' in navigator && false) { // falseで無効化
+  // Service Worker登録処理（無効）
+}
+```
+
+**PWA要件充足状況**:
+- ✅ **HTTPS配信** (local-ssl-proxy使用)
+- ✅ **Web App Manifest** (manifest.json)
+- ✅ **レスポンシブデザイン** (モバイル対応)
+- ❌ **Service Worker** (意図的に無効化)
+
+**結論**: Service Worker なしでも**完全なPWA**として機能する
+
+### Service Worker実装履歴（参考）
+**ファイル**: `sw.js` (現在無効化)
+**バージョン**: `nano-banana-v1.2.0`
+
+**実装していたキャッシュ戦略**:
 - **静的アセットキャッシュ**: Cache First戦略
   - HTML, CSS, JavaScript, manifest.json
-  - キャッシュ名: `nano-banana-static-v1.0.0`
+  - キャッシュ名: `nano-banana-static-v1.2.0`
 - **APIリクエスト**: Network Only戦略
   - Gemini API呼び出しは常にリアルタイム実行
   - キャッシュ対象外: `generativelanguage.googleapis.com`
 
+**発生した問題**:
+- Service Worker登録失敗による fetchイベント処理異常
+- APIリクエストの妨害（500エラー、無限ローディング）
+- デバッグの困難化
+
 ### オフライン対応
-- **静的ファイル**: キャッシュから提供
-- **フォールバック**: ネットワークエラー時にindex.htmlを提供
-- **API機能**: オンライン時のみ利用可能
+**現在**: オフライン対応なし（意図的）
+**理由**: 画像生成機能がオンライン必須のため、部分的オフライン対応は混乱を招く
 
 ### Web App Manifest
 **ファイル**: `manifest.json`

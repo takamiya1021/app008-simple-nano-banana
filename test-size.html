@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アスペクト比テスト - nano-banana</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .test-output {
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .size-example {
+            display: inline-block;
+            border: 2px solid #333;
+            margin: 10px;
+            position: relative;
+        }
+        .size-label {
+            position: absolute;
+            top: -25px;
+            left: 0;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .square { width: 100px; height: 100px; background-color: #FFE4E1; }
+        .portrait-916 { width: 60px; height: 107px; background-color: #E1F5FE; }
+        .landscape-169 { width: 107px; height: 60px; background-color: #E8F5E8; }
+        .portrait-34 { width: 75px; height: 100px; background-color: #FFF3E0; }
+        .landscape-43 { width: 100px; height: 75px; background-color: #F3E5F5; }
+    </style>
+</head>
+<body>
+    <h1>🍌 nano-banana アスペクト比テスト</h1>
+
+    <div class="test-section">
+        <h2>📐 アスペクト比視覚化</h2>
+        <p>各サイズの実際の比率：</p>
+
+        <div class="size-example">
+            <div class="size-label">1:1 (正方形)</div>
+            <div class="square"></div>
+        </div>
+
+        <div class="size-example">
+            <div class="size-label">9:16 (縦長)</div>
+            <div class="portrait-916"></div>
+        </div>
+
+        <div class="size-example">
+            <div class="size-label">16:9 (横長)</div>
+            <div class="landscape-169"></div>
+        </div>
+
+        <div class="size-example">
+            <div class="size-label">3:4 (縦長)</div>
+            <div class="portrait-34"></div>
+        </div>
+
+        <div class="size-example">
+            <div class="size-label">4:3 (横長)</div>
+            <div class="landscape-43"></div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔍 プロンプト生成テスト</h2>
+        <p>強化されたプロンプト生成をテスト：</p>
+
+        <button class="test-button" onclick="testSizePrompt('1:1')">1:1 テスト</button>
+        <button class="test-button" onclick="testSizePrompt('9:16')">9:16 テスト</button>
+        <button class="test-button" onclick="testSizePrompt('16:9')">16:9 テスト</button>
+        <button class="test-button" onclick="testSizePrompt('3:4')">3:4 テスト</button>
+        <button class="test-button" onclick="testSizePrompt('4:3')">4:3 テスト</button>
+
+        <div id="test-output" class="test-output">ここにプロンプト生成結果が表示されます</div>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 実際のプロンプト例</h2>
+        <p>「美しい風景」というプロンプトに各サイズ指定を適用した例：</p>
+        <button class="test-button" onclick="showRealExample()">例を表示</button>
+        <div id="example-output" class="test-output"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🚀 アプリで実際にテスト</h2>
+        <p><a href="index.html" class="test-button">メインアプリを開く</a></p>
+        <p>メインアプリで以下をテストしてください：</p>
+        <ul>
+            <li>9:16 を選択して「美しい山の風景」で生成</li>
+            <li>16:9 を選択して「美しい海の風景」で生成</li>
+            <li>結果が縦長・横長になっているか確認</li>
+        </ul>
+    </div>
+
+    <script>
+        // テスト用のgetSizePrompt関数（実装から複製）
+        function getSizePrompt(sizeRatio) {
+            switch(sizeRatio) {
+                case '1:1':
+                    return {
+                        prefix: '[Square Format 1:1] ',
+                        suffix: ' Create this as a perfect square composition in 1:1 aspect ratio format. Square image only.'
+                    };
+                case '9:16':
+                    return {
+                        prefix: '[Vertical Portrait 9:16] ',
+                        suffix: ' Create this as a tall vertical portrait in 9:16 aspect ratio format. Use portrait orientation with height significantly greater than width. Tall format only.'
+                    };
+                case '16:9':
+                    return {
+                        prefix: '[Horizontal Landscape 16:9] ',
+                        suffix: ' Create this as a wide horizontal landscape in 16:9 aspect ratio format. Use landscape orientation with width significantly greater than height. Wide format only.'
+                    };
+                case '4:3':
+                    return {
+                        prefix: '[Horizontal 4:3] ',
+                        suffix: ' Create this as a horizontal landscape in 4:3 aspect ratio format. Landscape orientation with traditional photography proportions.'
+                    };
+                case '3:4':
+                    return {
+                        prefix: '[Vertical Portrait 3:4] ',
+                        suffix: ' Create this as a vertical portrait in 3:4 aspect ratio format. Portrait orientation with classic photography proportions.'
+                    };
+                default:
+                    return {
+                        prefix: '[Square Format 1:1] ',
+                        suffix: ' Create this as a perfect square composition in 1:1 aspect ratio format. Square image only.'
+                    };
+            }
+        }
+
+        function testSizePrompt(sizeRatio) {
+            const sizePrompt = getSizePrompt(sizeRatio);
+            const testPrompt = "美しい自然の風景";
+            const enhancedPrompt = `${sizePrompt.prefix}${testPrompt}${sizePrompt.suffix}`;
+
+            const output = document.getElementById('test-output');
+            output.textContent =
+`🎯 サイズ: ${sizeRatio}
+📝 元のプロンプト: "${testPrompt}"
+🔢 プリフィックス: "${sizePrompt.prefix}"
+🔚 サフィックス: "${sizePrompt.suffix}"
+
+✨ 最終プロンプト:
+"${enhancedPrompt}"`;
+        }
+
+        function showRealExample() {
+            const examples = {
+                '1:1': getSizePrompt('1:1'),
+                '9:16': getSizePrompt('9:16'),
+                '16:9': getSizePrompt('16:9'),
+                '3:4': getSizePrompt('3:4'),
+                '4:3': getSizePrompt('4:3')
+            };
+
+            const basePrompt = "美しい風景";
+            let output = "基本プロンプト: \"" + basePrompt + "\"\n\n";
+
+            for (const [size, prompt] of Object.entries(examples)) {
+                const enhanced = `${prompt.prefix}${basePrompt}${prompt.suffix}`;
+                output += `【${size}】\n"${enhanced}"\n\n`;
+            }
+
+            document.getElementById('example-output').textContent = output;
+        }
+    </script>
+</body>
+</html>

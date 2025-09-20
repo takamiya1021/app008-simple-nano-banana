@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>描画機能テスト</title>
+    <style>
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 2px solid #667eea; border-radius: 8px; }
+        .btn { padding: 10px 20px; margin: 5px; cursor: pointer; background: #667eea; color: white; border: none; border-radius: 5px; }
+        .btn:hover { background: #5a67d8; }
+        .hidden { display: none !important; }
+        .image-preview { margin-top: 20px; }
+        .image-controls { margin-top: 10px; }
+        #test-result { margin-top: 20px; padding: 20px; background: #f0f0f0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>描画機能デバッグテスト</h1>
+
+        <div class="test-section">
+            <h2>1. HTMLが正しく配置されているか確認</h2>
+            <div id="image-preview-1" class="image-preview">
+                <div class="image-canvas-container">
+                    <img id="preview-img-1" alt="テスト画像" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==">
+                    <canvas id="drawing-canvas-1" class="drawing-canvas hidden"></canvas>
+                </div>
+                <div class="image-controls">
+                    <button id="toggle-drawing-1" class="btn btn-secondary">🎨 描画モード</button>
+                    <button id="remove-image-1" class="btn btn-secondary">画像1を削除</button>
+                </div>
+            </div>
+            <p>↑ ボタンが見えていますか？</p>
+        </div>
+
+        <div class="test-section">
+            <h2>2. DrawingManagerクラスが読み込まれているか</h2>
+            <button onclick="testDrawingManager()" class="btn">DrawingManagerテスト</button>
+            <div id="test-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>3. 実際の動作テスト</h2>
+            <input type="file" id="test-file" accept="image/*">
+            <div id="test-preview" class="hidden">
+                <img id="test-img" style="max-width: 300px;">
+                <div class="image-controls">
+                    <button id="test-toggle" class="btn">🎨 描画モード</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/drawing.js"></script>
+    <script>
+        function testDrawingManager() {
+            const result = document.getElementById('test-result');
+            try {
+                if (typeof DrawingManager !== 'undefined') {
+                    result.innerHTML = '<span style="color: green;">✅ DrawingManagerクラスが存在します</span>';
+
+                    // 実際に初期化してみる
+                    const manager = new DrawingManager(1);
+                    result.innerHTML += '<br><span style="color: green;">✅ DrawingManagerが初期化できました</span>';
+                } else {
+                    result.innerHTML = '<span style="color: red;">❌ DrawingManagerクラスが見つかりません</span>';
+                }
+            } catch (error) {
+                result.innerHTML = '<span style="color: red;">❌ エラー: ' + error.message + '</span>';
+            }
+        }
+
+        // ファイルアップロードテスト
+        document.getElementById('test-file').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('test-img').src = e.target.result;
+                    document.getElementById('test-preview').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 描画モードボタンテスト
+        document.getElementById('test-toggle').addEventListener('click', () => {
+            alert('描画モードボタンがクリックされました！');
+        });
+
+        // ページ読み込み時の自動チェック
+        window.addEventListener('load', () => {
+            console.log('DrawingManager存在チェック:', typeof DrawingManager !== 'undefined');
+            console.log('描画モードボタン要素:', document.getElementById('toggle-drawing-1'));
+        });
+    </script>
+</body>
+</html>

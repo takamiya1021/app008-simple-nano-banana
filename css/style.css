@@ -180,6 +180,12 @@ body {
     font-size: 14px;
 }
 
+/* 描画ボタンの明示的な表示設定 */
+#toggle-drawing-1, #toggle-drawing-2 {
+    display: inline-block !important;
+    visibility: visible !important;
+}
+
 /* 画像サイズ選択 */
 .image-size-selection {
     margin-top: 16px;
@@ -435,6 +441,11 @@ body {
     z-index: 1;
 }
 
+.image-upload-area.drawing-mode-active .file-input {
+    pointer-events: none; /* 描画モード中はクリック無効 */
+    display: none; /* 完全に無効化 */
+}
+
 .upload-placeholder {
     color: #718096;
 }
@@ -593,6 +604,137 @@ body {
     padding-right: 120px !important;
 }
 
+/* 描画機能のスタイル */
+.image-canvas-container {
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
+}
+
+.image-canvas-container img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+.drawing-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.drawing-canvas:not(.hidden) {
+    pointer-events: all;
+}
+
+.image-preview {
+    margin-top: 12px;
+}
+
+.image-preview.hidden {
+    display: none !important;
+}
+
+.image-controls {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.drawing-tools {
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+    z-index: 10; /* ファイル入力より前面に表示 */
+}
+
+.tool-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.tool-group label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #4a5568;
+    min-width: 40px;
+}
+
+.tool-btn, .color-btn {
+    width: 36px;
+    height: 36px;
+    border: 2px solid #e2e8f0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    font-size: 16px;
+}
+
+.tool-btn:hover, .color-btn:hover {
+    border-color: #667eea;
+    transform: scale(1.05);
+}
+
+.tool-btn.active, .color-btn.active {
+    border-color: #667eea;
+    background: #667eea;
+    color: white;
+}
+
+.color-btn.active {
+    border-color: #000;
+    box-shadow: 0 0 0 2px #667eea;
+}
+
+.color-btn {
+    border-radius: 50%;
+}
+
+/* 色ボタンの背景色（CSP準拠） */
+.color-btn.color-red { background-color: #ff0000 !important; }
+.color-btn.color-blue { background-color: #0000ff !important; }
+.color-btn.color-green { background-color: #00ff00 !important; }
+.color-btn.color-yellow { background-color: #ffff00 !important; }
+.color-btn.color-black { background-color: #000000 !important; }
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+    .drawing-tools {
+        padding: 8px;
+        gap: 8px;
+    }
+
+    .tool-btn, .color-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+
+    .tool-group {
+        gap: 6px;
+    }
+
+    .tool-group label {
+        font-size: 12px;
+        min-width: 35px;
+    }
+}
+
 /* 通知メッセージのスタイル */
 .notification {
     padding: 12px 16px;
@@ -747,6 +889,59 @@ body {
     gap: 1rem;
 }
 
+/* 自動翻訳トグルスイッチ */
+.auto-translate-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.3s;
+    border-radius: 12px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: #667eea;
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(26px);
+}
+
 .template-preview {
     background: #f7fafc;
     border: 1px solid #e2e8f0;
@@ -800,6 +995,17 @@ body {
     color: #718096;
     font-size: 14px;
     font-style: italic;
+}
+
+.model-note {
+    margin-top: 12px;
+    padding: 12px;
+    background: #fff5f5;
+    border: 1px solid #feb2b2;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #742a2a;
 }
 
 /* 結果エリア */
@@ -898,6 +1104,9 @@ body {
     margin-bottom: 20px;
     color: #4a5568;
     line-height: 1.5;
+    white-space: pre-line; /* 改行文字を反映 */
+    text-align: left; /* 詳細メッセージは左寄せ */
+    font-size: 14px;
 }
 
 /* ユーティリティクラス */
