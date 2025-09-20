@@ -15,6 +15,7 @@ class NanoBananaApp {
         this.currentMode = 'freeform'; // 現在の生成モード
         this.explanationTimeout = null; // サンプル説明表示用タイマー
         this.drawingManagers = []; // 描画マネージャー
+        this.deferredPrompt = null; // PWAインストールプロンプト
 
         // 設定
         this.config = {
@@ -33,6 +34,7 @@ class NanoBananaApp {
         await this.loadApiKey();  // awaitを追加して読み込み完了を待つ
         this.loadPromptHistory();
         this.updateUI();
+        this.initPWAInstall(); // PWAインストール機能の初期化
 
         console.log('nano-banana アプリが初期化されました');
     }
@@ -1687,6 +1689,110 @@ Translation:`;
                     promptSuffix: 'Use a perfectly square layout with a 1:1 aspect ratio.',
                     aspectRatio: '1:1'
                 };
+        }
+    }
+
+    /**
+     * PWAインストール機能の初期化
+     */
+    initPWAInstall() {
+        // インストールプロンプトイベントをキャプチャ
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // デフォルトのプロンプトを防ぐ
+            e.preventDefault();
+            // 後で使用するために保存
+            this.deferredPrompt = e;
+            console.log('PWAインストールプロンプトをキャプチャしました');
+
+            // インストールボタンを表示（初回のみ自動表示）
+            if (!localStorage.getItem('pwa-install-dismissed')) {
+                this.showInstallPrompt();
+            }
+        });
+
+        // インストール成功時の処理
+        window.addEventListener('appinstalled', () => {
+            console.log('PWAがインストールされました');
+            this.deferredPrompt = null;
+            this.hideInstallPrompt();
+        });
+
+        // すでにPWAとしてインストールされているかチェック
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            console.log('PWAモードで実行中');
+        }
+    }
+
+    /**
+     * インストールプロンプトの表示
+     */
+    showInstallPrompt() {
+        if (!this.deferredPrompt) return;
+
+        // インストール通知バナーを作成
+        const banner = document.createElement('div');
+        banner.id = 'pwa-install-banner';
+        banner.className = 'pwa-install-banner';
+        banner.innerHTML = `
+            <div class="pwa-banner-content">
+                <div class="pwa-banner-icon">📱</div>
+                <div class="pwa-banner-text">
+                    <strong>nano-bananaをインストール</strong>
+                    <p>ホーム画面に追加してアプリとして使用できます</p>
+                </div>
+                <div class="pwa-banner-actions">
+                    <button id="pwa-install-btn" class="btn btn-primary btn-small">インストール</button>
+                    <button id="pwa-dismiss-btn" class="btn btn-secondary btn-small">後で</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(banner);
+
+        // インストールボタンのクリックハンドラ
+        document.getElementById('pwa-install-btn').addEventListener('click', async () => {
+            if (!this.deferredPrompt) return;
+
+            // プロンプトを表示
+            this.deferredPrompt.prompt();
+
+            // ユーザーの選択を待つ
+            const { outcome } = await this.deferredPrompt.userChoice;
+            console.log(`ユーザーの選択: ${outcome}`);
+
+            if (outcome === 'accepted') {
+                console.log('PWAインストールが承認されました');
+            } else {
+                console.log('PWAインストールがキャンセルされました');
+            }
+
+            // プロンプトを再利用できないのでクリア
+            this.deferredPrompt = null;
+            this.hideInstallPrompt();
+        });
+
+        // 後でボタンのクリックハンドラ
+        document.getElementById('pwa-dismiss-btn').addEventListener('click', () => {
+            localStorage.setItem('pwa-install-dismissed', 'true');
+            this.hideInstallPrompt();
+        });
+
+        // アニメーション付きで表示
+        setTimeout(() => {
+            banner.classList.add('show');
+        }, 100);
+    }
+
+    /**
+     * インストールプロンプトを非表示
+     */
+    hideInstallPrompt() {
+        const banner = document.getElementById('pwa-install-banner');
+        if (banner) {
+            banner.classList.remove('show');
+            setTimeout(() => {
+                banner.remove();
+            }, 300);
         }
     }
 }
