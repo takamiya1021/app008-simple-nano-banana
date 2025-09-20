@@ -9,7 +9,6 @@ class NanoBananaApp {
         this.isGenerating = false;
         this.elements = {};
         this.promptHistory = [];
-        this.currentImageSize = '1:1';
         this.referenceImages = [null, null]; // 最大2枚の参考画像
         this.lastPrompt = '';
         this.currentMode = 'freeform'; // 現在の生成モード
@@ -36,6 +35,9 @@ class NanoBananaApp {
         this.updateUI();
         this.initPWAInstall(); // PWAインストール機能の初期化
 
+        // 初期モード（フリーフォーム）に設定
+        this.switchMode('freeform');
+
         console.log('nano-banana アプリが初期化されました');
     }
 
@@ -57,7 +59,6 @@ class NanoBananaApp {
             charCount: document.getElementById('char-count'),
             promptHistorySelect: document.getElementById('prompt-history-select'),
             clearHistoryBtn: document.getElementById('clear-history'),
-            imageSizeSelect: document.getElementById('image-size-select'),
 
             // 参考画像関連
             referenceImageInput1: document.getElementById('reference-image-1'),
@@ -91,6 +92,8 @@ class NanoBananaApp {
             promptSection: document.querySelector('.prompt-section'),
             template5Form: document.querySelector('.template5-form'),
             template6Form: document.querySelector('.template6-form'),
+            template7Form: document.querySelector('.template7-form'),
+            template8Form: document.querySelector('.template8-form'),
 
             // Template 5 要素
             t5Element1: document.getElementById('t5-element1'),
@@ -107,7 +110,27 @@ class NanoBananaApp {
             t6Mood: document.getElementById('t6-mood'),
             t6Aspect: document.getElementById('t6-aspect'),
             t6Preview: document.getElementById('t6-preview'),
-            generateTemplate6Btn: document.getElementById('generate-template6')
+            generateTemplate6Btn: document.getElementById('generate-template6'),
+
+            // Template 7 要素
+            t7Style: document.getElementById('t7-style'),
+            t7Subject: document.getElementById('t7-subject'),
+            t7Characteristics: document.getElementById('t7-characteristics'),
+            t7Background: document.getElementById('t7-background'),
+            t7Preview: document.getElementById('t7-preview'),
+            generateTemplate7Btn: document.getElementById('generate-template7'),
+
+            // Template 8 要素
+            t8Text: document.getElementById('t8-text'),
+            t8DesignType: document.getElementById('t8-design-type'),
+            t8FontStyle: document.getElementById('t8-font-style'),
+            t8Placement: document.getElementById('t8-placement'),
+            t8ColorTheme: document.getElementById('t8-color-theme'),
+            t8Preview: document.getElementById('t8-preview'),
+            generateTemplate8Btn: document.getElementById('generate-template8'),
+
+            // 参考画像セクション
+            referenceImageSection: document.querySelector('.reference-image-section')
         };
     }
 
@@ -127,8 +150,6 @@ class NanoBananaApp {
         this.elements.promptHistorySelect.addEventListener('change', () => this.selectFromHistory());
         this.elements.clearHistoryBtn.addEventListener('click', () => this.clearPromptHistory());
 
-        // 画像サイズ選択
-        this.elements.imageSizeSelect.addEventListener('change', () => this.updateImageSize());
 
         // サンプルプロンプト
         document.querySelectorAll('.sample-btn').forEach(btn => {
@@ -156,6 +177,7 @@ class NanoBananaApp {
             e.stopPropagation();
             this.removeReferenceImage(1);
         });
+
 
         // 画像生成
         this.elements.generateBtn.addEventListener('click', () => this.generateImage());
@@ -195,9 +217,39 @@ class NanoBananaApp {
             this.elements.t6Mood.addEventListener('change', () => this.updateTemplate6Preview());
             this.elements.t6Aspect.addEventListener('change', () => this.updateTemplate6Preview());
             this.elements.generateTemplate6Btn.addEventListener('click', async () => await this.generateTemplate6());
+
             console.log('✅ Template 6 イベント設定完了');
         } else {
             console.error('❌ Template 6 要素が見つかりません');
+        }
+
+        // Template 7 イベント
+        if (this.elements.t7Style) {
+            console.log('✅ Template 7 イベント設定開始');
+            this.elements.t7Style.addEventListener('change', () => this.updateTemplate7Preview());
+            this.elements.t7Subject.addEventListener('input', () => this.updateTemplate7Preview());
+            this.elements.t7Characteristics.addEventListener('input', () => this.updateTemplate7Preview());
+            this.elements.t7Background.addEventListener('change', () => this.updateTemplate7Preview());
+            this.elements.generateTemplate7Btn.addEventListener('click', async () => await this.generateTemplate7());
+
+            console.log('✅ Template 7 イベント設定完了');
+        } else {
+            console.error('❌ Template 7 要素が見つかりません');
+        }
+
+        // Template 8 イベント
+        if (this.elements.t8Text) {
+            console.log('✅ Template 8 イベント設定開始');
+            this.elements.t8Text.addEventListener('input', () => this.updateTemplate8Preview());
+            this.elements.t8DesignType.addEventListener('change', () => this.updateTemplate8Preview());
+            this.elements.t8FontStyle.addEventListener('change', () => this.updateTemplate8Preview());
+            this.elements.t8Placement.addEventListener('change', () => this.updateTemplate8Preview());
+            this.elements.t8ColorTheme.addEventListener('change', () => this.updateTemplate8Preview());
+            this.elements.generateTemplate8Btn.addEventListener('click', async () => await this.generateTemplate8());
+
+            console.log('✅ Template 8 イベント設定完了');
+        } else {
+            console.error('❌ Template 8 要素が見つかりません');
         }
     }
 
@@ -502,14 +554,20 @@ class NanoBananaApp {
             this.elements.deleteApiKeyBtn.disabled = true;
         }
 
-        // 生成ボタンの有効性
-        const prompt = this.elements.promptInput.value.trim();
-        const canGenerate = this.apiKey &&
-                           prompt &&
-                           prompt.length <= this.config.maxPromptLength &&
-                           !this.isGenerating;
-
-        this.elements.generateBtn.disabled = !canGenerate;
+        // フリーフォーム生成ボタンの有効性（フリーフォームモードのみ）
+        if (this.elements.generateBtn) {
+            if (this.currentMode === 'freeform') {
+                const prompt = this.elements.promptInput.value.trim();
+                const canGenerate = this.apiKey &&
+                                   prompt &&
+                                   prompt.length <= this.config.maxPromptLength &&
+                                   !this.isGenerating;
+                this.elements.generateBtn.disabled = !canGenerate;
+            } else {
+                // フリーフォームモード以外では無効化
+                this.elements.generateBtn.disabled = true;
+            }
+        }
     }
 
     /**
@@ -529,7 +587,7 @@ class NanoBananaApp {
         try {
             console.log('画像生成開始:', prompt);
 
-            const imageData = await this.callGeminiAPI(prompt, this.currentImageSize, this.prepareImagesForAPI());
+            const imageData = await this.callGeminiAPI(prompt, '1:1', this.prepareImagesForAPI());
             this.displayImage(imageData);
 
             // 履歴に追加
@@ -575,31 +633,13 @@ class NanoBananaApp {
      * Gemini API呼び出し（参照画像方式によるアスペクト比制御）
      */
     async callGeminiAPI(prompt, imageSize = '1:1', referenceImages = [null, null]) {
-        // プロンプトにサイズ指定を追加（参照画像と併用で軽量化）
-        const sizePrompt = this.getSizePrompt(imageSize);
-        const enhancedPrompt = `${sizePrompt.prefix}${prompt}${sizePrompt.suffix}`;
+        // フリーフォームモードではプロンプトにサイズ指定を追加しない
+        const enhancedPrompt = prompt;
 
-        console.log('🎯 シンプル参照画像方式デバッグ:');
-        console.log('  • 選択されたサイズ:', imageSize);
-        console.log('  • 最終プロンプト:', enhancedPrompt);
+        console.log('🎯 画像生成開始:', imageSize);
 
         // partsの配列を初期化（プロンプトテキストを最初に配置）
         const parts = [{ text: enhancedPrompt }];
-
-        // 1:1以外の場合のみ参照画像を使用
-        if (imageSize !== '1:1') {
-            const aspectRatioReference = this.generateReferenceImage(imageSize);
-            parts.unshift({
-                inlineData: {
-                    mimeType: aspectRatioReference.type,
-                    data: aspectRatioReference.data
-                }
-            });
-            console.log('📐 アスペクト比制御用参照画像を配置（サイズ:', imageSize, '）');
-        } else {
-            console.log('📐 1:1サイズのため参照画像は使用しません');
-        }
-
 
         // ユーザーの参考画像がある場合は追加（最大2枚）
         referenceImages.forEach((referenceImage, index) => {
@@ -614,13 +654,46 @@ class NanoBananaApp {
             }
         });
 
+        // Template 6の場合：ユーザー画像がない時のみアスペクト比制御用参照画像を追加
+        if (this.currentMode === 'template6' && imageSize !== '1:1') {
+            const hasUserImages = referenceImages.some(img => img !== null);
+            if (!hasUserImages) {
+                const aspectRatioReference = this.generateReferenceImage(imageSize);
+                parts.push({
+                    inlineData: {
+                        mimeType: aspectRatioReference.type,
+                        data: aspectRatioReference.data
+                    }
+                });
+                console.log('📐 コミックパネルモード：ユーザー画像なし → アスペクト比制御用参照画像を自動生成（サイズ:', imageSize, '）');
+            } else {
+                console.log('📐 コミックパネルモード：ユーザー画像あり → システム自動生成はスキップ');
+            }
+        }
+
+        // モード別の参照画像処理ログ
+        if (this.currentMode === 'freeform') {
+            console.log('📐 フリーフォームモード：参照画像なしで生成');
+        } else if (this.currentMode === 'template5') {
+            console.log('📐 詳細保持合成モード：ユーザー参考画像のみで生成');
+        } else if (this.currentMode === 'template6') {
+            const hasUserImages = referenceImages.some(img => img !== null);
+            if (hasUserImages) {
+                console.log('📐 コミックパネルモード：ユーザー参考画像で生成（システム自動生成なし）');
+            } else if (imageSize !== '1:1') {
+                console.log('📐 コミックパネルモード：アスペクト比制御用参照画像で生成');
+            } else {
+                console.log('📐 コミックパネルモード：参照画像なしで生成（1:1正方形）');
+            }
+        }
+
         const requestBody = {
             contents: [{
                 parts: parts
             }]
         };
 
-        console.log('API リクエスト:', JSON.stringify(requestBody, null, 2));
+        console.log('API リクエスト送信中...');
 
         // タイムアウト制御用のAbortController
         const controller = new AbortController();
@@ -1010,97 +1083,10 @@ class NanoBananaApp {
         console.log('プロンプト履歴がクリアされました');
     }
 
-    /**
-     * 指定されたアスペクト比のシンプル参照画像を生成（精査版）
-     */
-    generateReferenceImage(aspectRatio) {
-        // アスペクト比から幅と高さを計算
-        const { width, height } = this.getAspectRatioDimensions(aspectRatio);
-
-        // キャンバスを作成
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-
-        const ctx = canvas.getContext('2d');
-
-        // 非常にシンプルな微妙なグラデーション（認識されやすく、でも邪魔にならない）
-        const gradient = ctx.createLinearGradient(0, 0, width, height);
-        gradient.addColorStop(0, '#f9f9f9');
-        gradient.addColorStop(1, '#f5f5f5');
-
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, width, height);
-
-        // Base64データを取得
-        const dataURL = canvas.toDataURL('image/png');
-        const base64Data = dataURL.split(',')[1];
-
-        console.log(`🎯 シンプル参照画像生成 - ${aspectRatio} (${width}x${height})`);
-
-        return {
-            type: 'image/png',
-            data: base64Data
-        };
-    }
-
-    /**
-     * アスペクト比から最適な寸法を計算（修正版 - 正しい比率計算）
-     */
-    getAspectRatioDimensions(aspectRatio) {
-        // 基準サイズ（APIの制限内で適切なサイズ）
-        const baseSize = 512;
-
-        switch(aspectRatio) {
-            case '1:1':
-                return { width: baseSize, height: baseSize };
-            case '16:9':
-                // 16:9 = 1.777... なので width基準
-                return { width: baseSize, height: Math.round(baseSize * 9 / 16) };
-            case '9:16':
-                // 9:16 = 0.5625 なので height基準
-                return { width: Math.round(baseSize * 9 / 16), height: baseSize };
-            default:
-                return { width: baseSize, height: baseSize };
-        }
-    }
-
-    /**
-     * シンプルなアスペクト比指定プロンプト（参照画像方式専用）
-     */
-    getSizePrompt(sizeRatio) {
-        switch(sizeRatio) {
-            case '1:1':
-                return {
-                    prefix: '',
-                    suffix: ''
-                };
-            case '9:16':
-                return {
-                    prefix: '',
-                    suffix: ''
-                };
-            case '16:9':
-                return {
-                    prefix: '',
-                    suffix: ''
-                };
-            default:
-                return {
-                    prefix: '',
-                    suffix: ''
-                };
-        }
-    }
 
 
-    /**
-     * 画像サイズの更新
-     */
-    updateImageSize() {
-        this.currentImageSize = this.elements.imageSizeSelect.value;
-        console.log('画像サイズ更新:', this.currentImageSize);
-    }
+
+
 
     /**
      * サンプルプロンプトの選択
@@ -1289,6 +1275,7 @@ class NanoBananaApp {
         uploadArea.querySelector('.upload-placeholder').style.display = 'block';
         imagePreview.classList.add('hidden');
 
+
         console.log(`参考画像${imageIndex + 1}削除完了`);
     }
 
@@ -1345,7 +1332,7 @@ class NanoBananaApp {
         try {
             console.log('画像再生成開始:', this.lastPrompt);
 
-            const imageData = await this.callGeminiAPI(this.lastPrompt, this.currentImageSize, this.referenceImages);
+            const imageData = await this.callGeminiAPI(this.lastPrompt, '1:1', this.referenceImages);
             this.displayImage(imageData);
 
             console.log('画像再生成完了');
@@ -1380,11 +1367,138 @@ class NanoBananaApp {
         this.elements.promptSection.classList.toggle('hidden', mode !== 'freeform');
         this.elements.template5Form.classList.toggle('hidden', mode !== 'template5');
         this.elements.template6Form.classList.toggle('hidden', mode !== 'template6');
+        this.elements.template7Form.classList.toggle('hidden', mode !== 'template7');
+        this.elements.template8Form.classList.toggle('hidden', mode !== 'template8');
+
+        // 参考画像セクションは全モードで表示（モードごとに適切な説明で表示）
+        if (this.elements.referenceImageSection) {
+            this.elements.referenceImageSection.classList.remove('hidden');
+            this.updateReferenceImageSectionTitle(mode);
+        }
 
         // 現在のモードを記録
         this.currentMode = mode;
 
         console.log('モード切り替え:', mode);
+    }
+
+    /**
+     * 参考画像セクションのタイトルをモードに応じて更新
+     */
+    updateReferenceImageSectionTitle(mode) {
+        const titleElement = this.elements.referenceImageSection.querySelector('h2');
+        if (!titleElement) return;
+
+        switch(mode) {
+            case 'freeform':
+                titleElement.textContent = '参考画像（オプション - 最大2枚）';
+                break;
+            case 'template5':
+                titleElement.textContent = '参考画像（必須 - 2枚）';
+                break;
+            case 'template6':
+                titleElement.textContent = '参考画像（オプション - 最大2枚）';
+                break;
+            case 'template7':
+                titleElement.textContent = '参考画像（オプション - 最大2枚）';
+                break;
+            case 'template8':
+                titleElement.textContent = '参考画像（オプション - 最大2枚）';
+                break;
+            default:
+                titleElement.textContent = '参考画像（オプション - 最大2枚）';
+        }
+    }
+
+    /**
+     * Template 6専用：アスペクト比制御用参照画像を生成
+     */
+    generateReferenceImage(aspectRatio) {
+        // アスペクト比から幅と高さを計算
+        const { width, height } = this.getAspectRatioDimensions(aspectRatio);
+
+        // キャンバスを作成
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+
+        // 白い背景
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, width, height);
+
+        // 細い黒い外枠（境界を明示）
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(1, 1, width - 2, height - 2);
+
+        // 内側に「安全エリア」を示すグリッド
+        ctx.strokeStyle = '#999999';
+        ctx.lineWidth = 1;
+        const gridMargin = 16;
+
+        // 縦線
+        for (let i = 1; i < 4; i++) {
+            const x = gridMargin + (width - gridMargin * 2) * i / 4;
+            ctx.beginPath();
+            ctx.moveTo(x, gridMargin);
+            ctx.lineTo(x, height - gridMargin);
+            ctx.stroke();
+        }
+
+        // 横線
+        for (let i = 1; i < 3; i++) {
+            const y = gridMargin + (height - gridMargin * 2) * i / 3;
+            ctx.beginPath();
+            ctx.moveTo(gridMargin, y);
+            ctx.lineTo(width - gridMargin, y);
+            ctx.stroke();
+        }
+
+        // 中央にアスペクト比テキストを大きく描画
+        ctx.fillStyle = '#000000';
+        ctx.font = `bold ${Math.min(width, height) / 8}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(aspectRatio, width / 2, height / 2);
+
+        // 「FIT CONTENT HERE」の指示テキスト
+        ctx.fillStyle = '#666666';
+        ctx.font = `${Math.min(width, height) / 16}px Arial`;
+        ctx.fillText('FIT CONTENT HERE', width / 2, height / 2 + Math.min(width, height) / 12);
+
+        // Base64データを取得
+        const dataURL = canvas.toDataURL('image/png');
+        const base64Data = dataURL.split(',')[1];
+
+        console.log(`🎯 Template 6用参照画像生成 - ${aspectRatio} (${width}x${height})`);
+
+        return {
+            type: 'image/png',
+            data: base64Data
+        };
+    }
+
+    /**
+     * アスペクト比から最適な寸法を計算
+     */
+    getAspectRatioDimensions(aspectRatio) {
+        // 基準サイズ（APIの制限内で適切なサイズ）
+        const baseSize = 512;
+
+        switch(aspectRatio) {
+            case '1:1':
+                return { width: baseSize, height: baseSize };
+            case '16:9':
+                // 16:9 = 1.777... なので width基準
+                return { width: baseSize, height: Math.round(baseSize * 9 / 16) };
+            case '9:16':
+                // 9:16 = 0.5625 なので height基準
+                return { width: Math.round(baseSize * 9 / 16), height: baseSize };
+            default:
+                return { width: baseSize, height: baseSize };
+        }
     }
 
     /**
@@ -1396,7 +1510,7 @@ class NanoBananaApp {
         const integration = this.elements.t5Integration.value.trim();
 
         if (!element1 || !element2) {
-            this.elements.t5Preview.textContent = 'フォームを入力すると、ここにプロンプトが表示されます';
+            this.elements.t5Preview.value = 'フォームを入力すると、ここにプロンプトが表示されます';
             this.currentTemplate5Prompt = null;
             return;
         }
@@ -1407,7 +1521,7 @@ class NanoBananaApp {
         // プロンプト本体を保存（生成時に使用）
         this.currentTemplate5Prompt = prompt;
 
-        this.elements.t5Preview.textContent = prompt;
+        this.elements.t5Preview.value = prompt;
     }
 
     /**
@@ -1423,7 +1537,7 @@ class NanoBananaApp {
         const aspectDetails = this.getTemplate6AspectDetails(aspect);
 
         if (!foreground || !background) {
-            this.elements.t6Preview.textContent = 'フォームを入力すると、ここにプロンプトが表示されます';
+            this.elements.t6Preview.value = 'フォームを入力すると、ここにプロンプトが表示されます';
             this.currentTemplate6Prompt = null;
             return;
         }
@@ -1442,7 +1556,7 @@ class NanoBananaApp {
         console.log('🔍 DEBUG: プロンプト作成完了:', prompt);
         console.log('🔍 DEBUG: プロンプト長:', prompt.length);
 
-        this.elements.t6Preview.textContent = prompt;
+        this.elements.t6Preview.value = prompt;
 
         console.log('🔍 DEBUG: DOM表示後の内容:', this.elements.t6Preview.textContent);
         console.log('🔍 DEBUG: DOM表示後の長さ:', this.elements.t6Preview.textContent.length);
@@ -1459,10 +1573,11 @@ class NanoBananaApp {
         try {
             const textList = texts.map((text, index) => `${index + 1}. ${text}`).join('\n');
 
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${this.apiKey}`, {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'x-goog-api-key': this.apiKey
                 },
                 body: JSON.stringify({
                     contents: [{
@@ -1515,10 +1630,11 @@ Translation:`;
             console.log('🔍 DEBUG: API送信プロンプト:', apiPrompt);
             console.log('🔍 DEBUG: API送信プロンプト長:', apiPrompt.length);
 
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${this.apiKey}`, {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'x-goog-api-key': this.apiKey
                 },
                 body: JSON.stringify({
                     contents: [{
@@ -1571,17 +1687,17 @@ Translation:`;
         const autoTranslate = document.getElementById('t5-auto-translate').checked;
 
         // プレビューに表示されているプロンプトを取得
-        const originalPrompt = this.elements.t5Preview.textContent;
+        const originalPrompt = this.elements.t5Preview.value;
 
         let finalPrompt;
 
         if (autoTranslate) {
             // 自動翻訳ON：翻訳してから生成
-            this.elements.t5Preview.textContent = '翻訳しています...';
+            this.elements.t5Preview.value = '翻訳しています...';
             const translatedPrompt = await this.translateToEnglish(originalPrompt);
-            this.elements.t5Preview.textContent = translatedPrompt;
+            this.elements.t5Preview.value = translatedPrompt;
             await new Promise(resolve => setTimeout(resolve, 500));
-            finalPrompt = this.elements.t5Preview.textContent;
+            finalPrompt = this.elements.t5Preview.value;
         } else {
             // 自動翻訳OFF：そのまま生成
             finalPrompt = originalPrompt;
@@ -1609,17 +1725,17 @@ Translation:`;
         const autoTranslate = document.getElementById('t6-auto-translate').checked;
 
         // プレビューに表示されているプロンプトを取得
-        const originalPrompt = this.elements.t6Preview.textContent;
+        const originalPrompt = this.elements.t6Preview.value;
 
         let finalPrompt;
 
         if (autoTranslate) {
             // 自動翻訳ON：翻訳してから生成
-            this.elements.t6Preview.textContent = '翻訳しています...';
+            this.elements.t6Preview.value = '翻訳しています...';
             const translatedPrompt = await this.translateToEnglish(originalPrompt);
-            this.elements.t6Preview.textContent = translatedPrompt;
+            this.elements.t6Preview.value = translatedPrompt;
             await new Promise(resolve => setTimeout(resolve, 500));
-            finalPrompt = this.elements.t6Preview.textContent;
+            finalPrompt = this.elements.t6Preview.value;
         } else {
             // 自動翻訳OFF：そのまま生成
             finalPrompt = originalPrompt;
@@ -1690,6 +1806,182 @@ Translation:`;
                     aspectRatio: '1:1'
                 };
         }
+    }
+
+    /**
+     * Template 7のプロンプトプレビュー更新
+     */
+    updateTemplate7Preview() {
+        const style = this.elements.t7Style.value;
+        const subject = this.elements.t7Subject.value.trim();
+        const characteristics = this.elements.t7Characteristics.value.trim();
+        const background = this.elements.t7Background.value;
+
+        if (!subject) {
+            this.elements.t7Preview.value = 'フォームを入力すると、ここにプロンプトが表示されます';
+            this.currentTemplate7Prompt = null;
+            return;
+        }
+
+        const prompt = this.buildTemplate7Prompt(style, subject, characteristics, background);
+
+        // プロンプト本体を保存（生成時に使用）
+        this.currentTemplate7Prompt = prompt;
+
+        this.elements.t7Preview.value = prompt;
+    }
+
+    /**
+     * Template 7のプロンプトを構築
+     */
+    buildTemplate7Prompt(style, subject, characteristics, background) {
+        let prompt = `A ${style} style sticker featuring ${subject}`;
+
+        if (characteristics) {
+            prompt += ` with ${characteristics}`;
+        }
+
+        prompt += '. The design should have clean edges, vibrant colors, and work well as a standalone sticker.';
+        prompt += ` ${this.getTemplate7BackgroundSuffix(background)}`;
+
+        return prompt;
+    }
+
+    /**
+     * Template 7背景オプションの文字列を取得
+     */
+    getTemplate7BackgroundSuffix(background) {
+        const backgroundOptions = {
+            'transparent': 'transparent background.',
+            'solid': 'solid color background.',
+            'none': 'no background.'
+        };
+        return backgroundOptions[background] || 'transparent background.';
+    }
+
+    /**
+     * Template 7での画像生成
+     */
+    async generateTemplate7() {
+        const subject = this.elements.t7Subject.value.trim();
+
+        if (!subject) {
+            this.showError('主題を入力してください');
+            return;
+        }
+
+        // 自動翻訳スイッチの状態を確認
+        const autoTranslate = document.getElementById('t7-auto-translate').checked;
+
+        // プレビューに表示されているプロンプトを取得
+        const originalPrompt = this.elements.t7Preview.value;
+
+        let finalPrompt;
+
+        if (autoTranslate) {
+            // 自動翻訳ON：翻訳してから生成
+            this.elements.t7Preview.value = '翻訳しています...';
+            const translatedPrompt = await this.translateToEnglish(originalPrompt);
+            this.elements.t7Preview.value = translatedPrompt;
+            await new Promise(resolve => setTimeout(resolve, 500));
+            finalPrompt = this.elements.t7Preview.value;
+        } else {
+            // 自動翻訳OFF：そのまま生成
+            finalPrompt = originalPrompt;
+        }
+
+        console.log('🎯 Template 7 最終プロンプト:', finalPrompt);
+
+        await this.performGeneration(finalPrompt);
+    }
+
+    /**
+     * Template 8のプロンプトプレビュー更新
+     */
+    updateTemplate8Preview() {
+        const text = this.elements.t8Text.value.trim();
+        const designType = this.elements.t8DesignType.value;
+        const fontStyle = this.elements.t8FontStyle.value;
+        const placement = this.elements.t8Placement.value;
+        const colorTheme = this.elements.t8ColorTheme.value;
+
+        if (!text) {
+            this.elements.t8Preview.value = 'フォームを入力すると、ここにプロンプトが表示されます';
+            this.currentTemplate8Prompt = null;
+            return;
+        }
+
+        const prompt = this.buildTemplate8Prompt(text, designType, fontStyle, placement, colorTheme);
+
+        // プロンプト本体を保存（生成時に使用）
+        this.currentTemplate8Prompt = prompt;
+
+        this.elements.t8Preview.value = prompt;
+    }
+
+    /**
+     * Template 8のプロンプトを構築
+     */
+    buildTemplate8Prompt(text, designType, fontStyle, placement, colorTheme) {
+        const components = [
+            `Create a ${designType} with the text '${text}' in ${fontStyle} font.`,
+            `Position the text ${placement} with ${colorTheme} color scheme.`,
+            'The design should be clean and readable.'
+        ];
+
+        return components.join(' ');
+    }
+
+    /**
+     * Template 8の入力バリデーション
+     */
+    validateTemplate8Input(text) {
+        if (!text) {
+            this.showError('テキスト内容を入力してください');
+            return false;
+        }
+
+        if (text.length > 100) {
+            this.showError('テキストは100文字以内にしてください');
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Template 8での画像生成
+     */
+    async generateTemplate8() {
+        const text = this.elements.t8Text.value.trim();
+
+        if (!this.validateTemplate8Input(text)) {
+            return;
+        }
+
+        // 自動翻訳スイッチの状態を確認
+        const autoTranslate = document.getElementById('t8-auto-translate').checked;
+
+        // プレビューに表示されているプロンプトを取得
+        const originalPrompt = this.elements.t8Preview.value;
+
+        let finalPrompt;
+
+        if (autoTranslate) {
+            // 自動翻訳ON：翻訳してから生成
+            this.elements.t8Preview.value = '翻訳しています...';
+            const translatedPrompt = await this.translateToEnglish(originalPrompt);
+            this.elements.t8Preview.value = translatedPrompt;
+            await new Promise(resolve => setTimeout(resolve, 500));
+            finalPrompt = this.elements.t8Preview.value;
+        } else {
+            // 自動翻訳OFF：そのまま生成
+            finalPrompt = originalPrompt;
+        }
+
+        console.log('🎯 Template 8 最終プロンプト:', finalPrompt);
+
+        await this.performGeneration(finalPrompt);
     }
 
     /**
@@ -1795,6 +2087,7 @@ Translation:`;
             }, 300);
         }
     }
+
 }
 
 /**

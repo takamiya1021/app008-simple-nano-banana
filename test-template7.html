@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template 7 TDD Tests</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 10px; border: 1px solid #ccc; }
+        .test-pass { background-color: #e8f5e8; }
+        .test-fail { background-color: #ffe8e8; }
+        .test-result { font-weight: bold; margin: 10px 0; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <h1>Template 7（ステッカーモード）TDD テスト</h1>
+
+    <div id="test-results"></div>
+
+    <!-- テスト用のダミーHTMLエレメント -->
+    <div style="display: none;">
+        <!-- mode-tab要素追加 -->
+        <button class="mode-tab" data-mode="template7">Template 7</button>
+
+        <!-- switchModeが参照する他の要素も追加 -->
+        <div class="prompt-section hidden"></div>
+        <div class="template5-form hidden"></div>
+        <div class="template6-form hidden"></div>
+
+        <select id="t7-style">
+            <option value="kawaii">Kawaii</option>
+            <option value="minimal">Minimal</option>
+        </select>
+        <input id="t7-subject" type="text" value="cat">
+        <input id="t7-characteristics" type="text" value="orange, sitting">
+        <select id="t7-background">
+            <option value="transparent">Transparent</option>
+            <option value="solid">Solid Color</option>
+        </select>
+        <textarea id="t7-preview"></textarea>
+        <button id="generate-template7">Generate</button>
+
+        <!-- モード切り替えテスト用の要素 -->
+        <section class="section template7-form hidden">
+            <h2>🏷️ ステッカーモード</h2>
+            <!-- テスト用の最小構成 -->
+        </section>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        // TDD Red段階：失敗するテストケース
+
+        let testResults = [];
+
+        function runTest(testName, testFunction) {
+            try {
+                const result = testFunction();
+                if (result) {
+                    testResults.push({ name: testName, status: 'PASS', message: result });
+                } else {
+                    testResults.push({ name: testName, status: 'FAIL', message: 'Test returned false' });
+                }
+            } catch (error) {
+                testResults.push({ name: testName, status: 'FAIL', message: error.message });
+            }
+        }
+
+        // テスト1: Template 7フォーム要素の存在確認
+        runTest('Template 7 Form Elements Exist', () => {
+            const app = new NanoBananaApp();
+            app.bindElements();
+
+            // これらの要素は存在しないので失敗する（Red段階）
+            const hasStyleSelect = !!app.elements.t7Style;
+            const hasSubjectInput = !!app.elements.t7Subject;
+            const hasCharacteristicsInput = !!app.elements.t7Characteristics;
+            const hasBackgroundSelect = !!app.elements.t7Background;
+            const hasPreview = !!app.elements.t7Preview;
+            const hasGenerateBtn = !!app.elements.generateTemplate7Btn;
+
+            if (!hasStyleSelect) throw new Error('t7Style element not found');
+            if (!hasSubjectInput) throw new Error('t7Subject element not found');
+            if (!hasCharacteristicsInput) throw new Error('t7Characteristics element not found');
+            if (!hasBackgroundSelect) throw new Error('t7Background element not found');
+            if (!hasPreview) throw new Error('t7Preview element not found');
+            if (!hasGenerateBtn) throw new Error('generateTemplate7Btn element not found');
+
+            return 'All Template 7 elements found';
+        });
+
+        // テスト2: Template 7プロンプト生成機能
+        runTest('Template 7 Prompt Generation', () => {
+            const app = new NanoBananaApp();
+            app.bindElements();
+
+            // updateTemplate7Preview メソッドが存在しないので失敗する（Red段階）
+            if (typeof app.updateTemplate7Preview !== 'function') {
+                throw new Error('updateTemplate7Preview method not found');
+            }
+
+            // テスト用の値を設定
+            app.elements.t7Style.value = 'kawaii';
+            app.elements.t7Subject.value = 'cat';
+            app.elements.t7Characteristics.value = 'orange, sitting';
+            app.elements.t7Background.value = 'transparent';
+
+            // プロンプト生成を実行
+            app.updateTemplate7Preview();
+
+            // 期待される出力をチェック
+            const expectedPrompt = 'A kawaii style sticker featuring cat with orange, sitting. The design should have clean edges, vibrant colors, and work well as a standalone sticker. transparent background.';
+            const actualPrompt = app.elements.t7Preview.value;
+
+            if (actualPrompt !== expectedPrompt) {
+                throw new Error(`Expected: ${expectedPrompt}, but got: ${actualPrompt}`);
+            }
+
+            return 'Template 7 prompt generated correctly';
+        });
+
+        // テスト3: Template 7生成機能
+        runTest('Template 7 Generation Function', () => {
+            const app = new NanoBananaApp();
+            app.bindElements();
+
+            // generateTemplate7 メソッドが存在しないので失敗する（Red段階）
+            if (typeof app.generateTemplate7 !== 'function') {
+                throw new Error('generateTemplate7 method not found');
+            }
+
+            return 'Template 7 generation function exists';
+        });
+
+        // テスト4: Template 7モード切り替え
+        runTest('Template 7 Mode Switch', () => {
+            const app = new NanoBananaApp();
+            app.bindElements();
+
+            // template7モードが存在しないので失敗する（Red段階）
+            app.switchMode('template7');
+
+            if (app.currentMode !== 'template7') {
+                throw new Error(`Expected mode 'template7', but got '${app.currentMode}'`);
+            }
+
+            // template7フォームが表示されるかチェック
+            const template7Form = document.querySelector('.template7-form');
+            if (!template7Form) {
+                throw new Error('template7-form element not found');
+            }
+
+            if (template7Form.classList.contains('hidden')) {
+                throw new Error('template7-form should be visible when template7 mode is active');
+            }
+
+            return 'Template 7 mode switch works correctly';
+        });
+
+        // テスト結果を表示
+        function displayResults() {
+            const resultsDiv = document.getElementById('test-results');
+            let html = '';
+
+            testResults.forEach(test => {
+                const cssClass = test.status === 'PASS' ? 'test-pass' : 'test-fail';
+                html += `
+                    <div class="test-section ${cssClass}">
+                        <div class="test-result">${test.status}: ${test.name}</div>
+                        <div>${test.message}</div>
+                    </div>
+                `;
+            });
+
+            const passCount = testResults.filter(t => t.status === 'PASS').length;
+            const failCount = testResults.filter(t => t.status === 'FAIL').length;
+
+            html = `
+                <div class="test-result">
+                    Test Summary: ${passCount} PASS, ${failCount} FAIL
+                </div>
+                ${html}
+            `;
+
+            resultsDiv.innerHTML = html;
+        }
+
+        // DOMContentLoaded後にテスト実行
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                displayResults();
+            }, 100);
+        });
+    </script>
+</body>
+</html>

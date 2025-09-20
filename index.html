@@ -93,6 +93,16 @@
                             <div class="mode-title">コミックパネル</div>
                             <div class="mode-desc">ストーリーボード風生成</div>
                         </button>
+                        <button class="mode-tab" data-mode="template7">
+                            <div class="mode-icon">🏷️</div>
+                            <div class="mode-title">ステッカー</div>
+                            <div class="mode-desc">スタイル統一ステッカー</div>
+                        </button>
+                        <button class="mode-tab" data-mode="template8">
+                            <div class="mode-icon">📝</div>
+                            <div class="mode-title">テキスト統合</div>
+                            <div class="mode-desc">正確なテキスト表示</div>
+                        </button>
                     </div>
                 </div>
             </section>
@@ -136,8 +146,8 @@
                         詳細保持合成で生成
                     </button>
                     <div class="template-preview">
-                        <strong>生成プロンプト:</strong>
-                        <div id="t5-preview" class="prompt-preview">フォームを入力すると、ここにプロンプトが表示されます</div>
+                        <strong>生成プロンプト（編集可能）:</strong>
+                        <textarea id="t5-preview" class="textarea prompt-textarea" rows="4" placeholder="フォームを入力すると、ここにプロンプトが表示されます">フォームを入力すると、ここにプロンプトが表示されます</textarea>
                     </div>
                 </div>
             </section>
@@ -224,8 +234,128 @@
                         コミックパネルで生成
                     </button>
                     <div class="template-preview">
-                        <strong>生成プロンプト:</strong>
-                        <div id="t6-preview" class="prompt-preview">フォームを入力すると、ここにプロンプトが表示されます</div>
+                        <strong>生成プロンプト（編集可能）:</strong>
+                        <textarea id="t6-preview" class="textarea prompt-textarea" rows="4" placeholder="フォームを入力すると、ここにプロンプトが表示されます">フォームを入力すると、ここにプロンプトが表示されます</textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Template 7: ステッカーモードフォーム -->
+            <section class="section template7-form hidden">
+                <h2>🏷️ ステッカーモード</h2>
+                <div class="template-description">
+                    <p><strong>ステッカー生成：</strong>スタイル統一されたステッカー画像を生成します。背景透明、輪郭強調、スタイル一貫性に特化。</p>
+                </div>
+                <div class="template-form-grid">
+                    <div class="template-input-group">
+                        <label for="t7-style">スタイル:</label>
+                        <select id="t7-style" class="input">
+                            <option value="kawaii">Kawaii（可愛い系）</option>
+                            <option value="minimal">Minimal（ミニマル）</option>
+                            <option value="pop">Pop（ポップ）</option>
+                            <option value="hand-drawn">Hand-drawn（手描き風）</option>
+                        </select>
+                    </div>
+                    <div class="template-input-group">
+                        <label for="t7-subject">主題:</label>
+                        <input id="t7-subject" type="text" class="input" placeholder="例: cat, robot, flower">
+                        <small class="input-hint">ステッカーの主題となるもの</small>
+                    </div>
+                    <div class="template-input-group">
+                        <label for="t7-characteristics">特徴:</label>
+                        <input id="t7-characteristics" type="text" class="input" placeholder="例: orange, sitting, smiling">
+                        <small class="input-hint">見た目や状態の特徴</small>
+                    </div>
+                    <div class="template-input-group">
+                        <label for="t7-background">背景:</label>
+                        <select id="t7-background" class="input">
+                            <option value="transparent">Transparent（透明推奨）</option>
+                            <option value="solid">Solid Color（単色）</option>
+                            <option value="none">None（なし）</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="template-actions">
+                    <div class="auto-translate-toggle">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="t7-auto-translate">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <label for="t7-auto-translate">自動翻訳</label>
+                    </div>
+                    <button id="generate-template7" class="btn btn-generate">
+                        ステッカーで生成
+                    </button>
+                    <div class="template-preview">
+                        <strong>生成プロンプト（編集可能）:</strong>
+                        <textarea id="t7-preview" class="textarea prompt-textarea" rows="4" placeholder="フォームを入力すると、ここにプロンプトが表示されます">フォームを入力すると、ここにプロンプトが表示されます</textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Template 8: テキスト統合モードフォーム -->
+            <section class="section template8-form hidden">
+                <h2>📝 テキスト統合モード</h2>
+                <div class="template-description">
+                    <p><strong>テキスト統合：</strong>テキストが正確に表示される画像を生成します。フォント、配置、色彩を制御して読みやすいデザインを作成。</p>
+                </div>
+                <div class="template-form-grid">
+                    <div class="template-input-group">
+                        <label for="t8-text">テキスト内容:</label>
+                        <input id="t8-text" type="text" class="input" placeholder="例: Hello World, Welcome">
+                        <small class="input-hint">表示したいテキスト（100文字以内）</small>
+                    </div>
+                    <div class="template-input-group">
+                        <label for="t8-design-type">デザインタイプ:</label>
+                        <select id="t8-design-type" class="input">
+                            <option value="poster">Poster（ポスター）</option>
+                            <option value="logo">Logo（ロゴ）</option>
+                            <option value="sign">Sign（看板）</option>
+                            <option value="banner">Banner（バナー）</option>
+                        </select>
+                    </div>
+                    <div class="template-input-group">
+                        <label for="t8-font-style">フォントスタイル:</label>
+                        <select id="t8-font-style" class="input">
+                            <option value="handwritten">Handwritten（手書き風）</option>
+                            <option value="print">Print（印刷体）</option>
+                            <option value="decorative">Decorative（装飾文字）</option>
+                            <option value="modern">Modern（モダン）</option>
+                        </select>
+                    </div>
+                    <div class="template-input-group">
+                        <label for="t8-placement">配置:</label>
+                        <select id="t8-placement" class="input">
+                            <option value="center">Center（中央）</option>
+                            <option value="top">Top（上部）</option>
+                            <option value="bottom">Bottom（下部）</option>
+                            <option value="left">Left（左）</option>
+                            <option value="right">Right（右）</option>
+                        </select>
+                    </div>
+                    <div class="template-input-group">
+                        <label for="t8-color-theme">カラーテーマ:</label>
+                        <select id="t8-color-theme" class="input">
+                            <option value="colorful">Colorful（カラフル）</option>
+                            <option value="monochrome">Monochrome（モノクロ）</option>
+                            <option value="pastel">Pastel（パステル）</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="template-actions">
+                    <div class="auto-translate-toggle">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="t8-auto-translate">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <label for="t8-auto-translate">自動翻訳</label>
+                    </div>
+                    <button id="generate-template8" class="btn btn-generate">
+                        テキスト統合で生成
+                    </button>
+                    <div class="template-preview">
+                        <strong>生成プロンプト（編集可能）:</strong>
+                        <textarea id="t8-preview" class="textarea prompt-textarea" rows="4" placeholder="フォームを入力すると、ここにプロンプトが表示されます">フォームを入力すると、ここにプロンプトが表示されます</textarea>
                     </div>
                 </div>
             </section>
@@ -250,14 +380,6 @@
                         <option value="">過去のプロンプトを選択</option>
                     </select>
                     <button id="clear-history" class="btn btn-secondary btn-small">履歴クリア</button>
-                </div>
-                <div class="image-size-selection">
-                    <label>画像サイズ:</label>
-                    <select id="image-size-select" class="size-select">
-                        <option value="1:1">正方形 (1:1)</option>
-                        <option value="16:9">横長 (16:9)</option>
-                        <option value="9:16">縦長 (9:16)</option>
-                    </select>
                 </div>
                 <div class="sample-prompts">
                     <label>📝 公式推奨サンプルプロンプト:</label>
@@ -286,6 +408,13 @@
                             <strong>💡 ポイント:</strong> ボタンにマウスを乗せると、効果的なプロンプトの書き方のコツが表示されます
                         </div>
                     </div>
+                </div>
+
+                <!-- フリーフォーム生成ボタン -->
+                <div class="control-section">
+                    <button id="generate-btn" class="btn btn-generate" disabled>
+                        画像を生成
+                    </button>
                 </div>
             </section>
 
@@ -338,6 +467,7 @@
                     </div>
                 </div>
 
+
                 <!-- 入力画像2 -->
                 <div class="input-group">
                     <label for="reference-image-2">入力画像2:</label>
@@ -382,14 +512,9 @@
                         </div>
                     </div>
                 </div>
+
             </section>
 
-            <!-- 生成ボタン -->
-            <section class="section control-section">
-                <button id="generate-btn" class="btn btn-generate" disabled>
-                    画像を生成
-                </button>
-            </section>
 
             <!-- 結果表示セクション -->
             <section class="section result-section">

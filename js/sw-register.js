@@ -4,7 +4,7 @@
  */
 
 // Service Worker登録（PWA対応）
-if ('serviceWorker' in navigator) { // PWAインストール機能のために有効化
+if ('serviceWorker' in navigator && false) { // falseで無効化 - PWAインストールはmanifest.jsonのみで可能
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js')
             .then((registration) => {
@@ -17,4 +17,4 @@ if ('serviceWorker' in navigator) { // PWAインストール機能のために�
 }
 
 // Service Worker状態をログに記録
-console.log('Service Worker有効化 - PWAインストール機能のため');
+console.log('Service Worker無効化 - 画像生成API干渉回避のため');
