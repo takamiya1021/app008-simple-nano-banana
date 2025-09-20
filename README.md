@@ -1,6 +1,6 @@
 # 🍌 nano-banana - AI画像生成PWAアプリ
 
-![nano-banana](png/nano-banana-icon.png)
+![nano-banana](png/nano-banana-app-screenshot.png)
 
 ## 📌 概要
 
